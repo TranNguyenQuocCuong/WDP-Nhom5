@@ -1,21 +1,50 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Navbar from './components/navbar';
-import Home from './components/home';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Login from './components/login';
 import Signup from './components/signup';
+import ViewCoach from './components/viewCoach';
+import ViewCourse from './components/viewCourse';
+import './App.css';
 
-const App = () => {
+function App() {
     return (
         <Router>
-            <Navbar />
-            <Routes>
-                <Route path="/" exact component={Home} />
-                <Route path="/login" component={Login} />
-                <Route path="/signup" component={Signup} />
-            </Routes>
+            <div>
+                <nav>
+                    <div className="navbar-left">
+                        <Link to="/">Logo</Link>
+                    </div>
+                    <div className="navbar-middle">
+                        <ul>
+                            <li>
+                                <Link to="/view-coach">View Coach</Link>
+                            </li>
+                            <li>
+                                <Link to="/view-workout-course">View Workout Course</Link>
+                            </li>
+                        </ul>
+                    </div>
+                    <div className="navbar-right">
+                        <ul>
+                            <li>
+                                <Link to="/login">Login</Link>
+                            </li>
+                            <li>
+                                <Link to="/signup">Signup</Link>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <Routes>
+                    <Route path="/view-coach" element={<ViewCoach />} />
+                    <Route path="/view-workout-course" element={<ViewCourse />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
+                </Routes>
+            </div>
         </Router>
     );
-};
+}
 
 export default App;
