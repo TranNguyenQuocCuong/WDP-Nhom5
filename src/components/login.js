@@ -5,15 +5,14 @@ const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        axios.post('http://localhost:5000/api/users/login', { username, password })
-            .then(response => {
-                alert(response.data);
-            })
-            .catch(error => {
-                alert('Log in failed');
-            });
+        try {
+            const response = await axios.post('http://localhost:5000/api/users/login', { username, password });
+            alert(response.data.msg);
+        } catch (error) {
+            alert('Error logging in: ' + error.response.data.msg);
+        }
     };
 
     return (

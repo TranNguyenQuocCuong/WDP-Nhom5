@@ -5,15 +5,14 @@ const Signup = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        axios.post('http://localhost:5000/api/users/register', { username, password })
-            .then(response => {
-                alert(response.data);
-            })
-            .catch(error => {
-                alert('Sign up failed');
-            });
+        try {
+            const response = await axios.post('http://localhost:5000/api/users/register', { username, password });
+            alert(response.data.msg);
+        } catch (error) {
+            alert('Error signing up: ' + error.response.data.msg);
+        }
     };
 
     return (
