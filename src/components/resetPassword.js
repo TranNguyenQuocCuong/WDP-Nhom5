@@ -1,17 +1,18 @@
 import React from 'react'
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from 'axios'
 
 
-function ForgotPassword() {
-    const [email, setEmail] = useState()
+function ResetPassword() {
+    const [password, setPassword] = useState()
     const navigate = useNavigate()
+    const {id, token} = useParams()
 
     axios.defaults.withCredentials = true;
     const handleSubmit = (e) => {
         e.preventDefault()
-        axios.post('http://localhost:3001/forgotpassword', {email})
+        axios.post(`http://localhost:3001/resetpassword/${id}/${token}`, {password})
         .then(res => {
             if(res.data.Status === "Success") {
                 navigate('/login')
@@ -20,28 +21,26 @@ function ForgotPassword() {
         }).catch(err => console.log(err))
     }
 
-    
-
     return(
         <div className="d-flex justify-content-center align-items-center bg-secondary vh-100">
       <div className="bg-white p-3 rounded w-25">
-        <h4>Forgot Password</h4>
+        <h4>Reset Password</h4>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="email">
-              <strong>Email</strong>
+              <strong>New Password</strong>
             </label>
             <input
-              type="email"
-              placeholder="Enter Email"
+              type="password"
+              placeholder="Enter Password"
               autoComplete="off"
-              name="email"
+              name="password"
               className="form-control rounded-0"
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <button type="submit" className="btn btn-success w-100 rounded-0">
-            Send
+            Update
           </button>
           </form>
         
@@ -50,4 +49,4 @@ function ForgotPassword() {
     )
 }
 
-export default ForgotPassword;
+export default ResetPassword;

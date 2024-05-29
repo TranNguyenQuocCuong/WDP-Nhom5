@@ -5,6 +5,8 @@ import Signup from './components/signup';
 import ViewCoach from './components/viewCoach';
 import ViewCourse from './components/viewCourse';
 import './App.css';
+import ForgotPassword from './components/forgotPassword';
+import ResetPassword from './components/resetPassword';
 
 function App() {
     return (
@@ -41,6 +43,8 @@ function App() {
                     <Route path="/view-workout-course" element={<ViewCourse />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<Signup />} />
+                    <Route path="/forgotpassword" element={<ForgotPassword />} />
+                    <Route path="/resetpassword" element={<ResetPassword/>} />
                 </Routes>
             </div>
         </Router>
