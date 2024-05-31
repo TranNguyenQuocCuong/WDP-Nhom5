@@ -23,44 +23,47 @@ app.get('/', (req, res) => {
 });
 
 const userRoutes = require('./routes/users');
+const forgotpasswordRoutes = require('./routes/forgotpassword');
 app.use('/api/users', userRoutes);
+app.use('/forgotpassword', forgotpasswordRoutes);
+// app.post('/forgotpassword', (req, res) => {
+//   const { email } = req.body;
+//   UserModel.findOne({ email: email })
+//     .then(user => {
+//       if (!user) {
+//         return res.send({ Status: "User not existed" })
+//       }
+//       const token = jwt.sign({ id: user._id }, "jwt_secret_key", { expiresIn: "id" })
+//       var transporter = nodemailer.createTransport({
+//         service: 'gmail',
+//         auth: {
+//           user: 'phandinhdan6666@gmail.com',
+//           pass: 'nxum kgxi agdf rnvi'
+//         }
+//       });
 
+//       var mailOptions = {
+//         from: 'phandinhdan6666@gmail.com',
+//         to: 'phandinhdan6602@gmail.com',
+//         subject: 'Reset Password Link',
+//         text: 'http://localhost:3000/resetpassword/${user._id}/${token}'
+//       };
+
+//       transporter.sendMail(mailOptions, function (error, info) {
+//         if (error) {
+//           console.log(error);
+//         } else {
+//           return res.send({ Status: "Success" })
+//         }
+//       });
+//     })
+// })
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-app.post('/forgotpassword', (req, res) => {
-  // const { email } = req.body;
-  // UserModel.findOne({ email: email })
-  //   .then(user => {
-  //     if (!user) {
-  //       return res.send({ Status: "User not existed" })
-  //     }
-  //     const token = jwt.sign({ id: user._id }, "jwt_secret_key", { expiresIn: "id" })
-  var transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'phandinhdan6666@gmail.com',
-      pass: 'nxum kgxi agdf rnvi'
-    }
-  });
 
-  var mailOptions = {
-    from: 'phandinhdan6666@gmail.com',
-    to: 'phandinhdan6602@gmail.com',
-    subject: 'Reset Password Link',
-    text: `http://localhost:3000/resetpassword/${user._id}/${token}`
-  };
-
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.log(error);
-    } else {
-      return res.send({ Status: "Success" })
-    }
-  });
-})
 
 app.post('/resetpassword/:id/:token', (req, res) => {
   const { id, token } = req.params

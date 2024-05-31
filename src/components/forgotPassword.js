@@ -11,7 +11,7 @@ function ForgotPassword() {
     axios.defaults.withCredentials = true;
     const handleSubmit = (e) => {
         e.preventDefault()
-        axios.post('http://localhost:3001/forgotpassword', {email})
+        axios.post('http://localhost:5000/forgotpassword', {email})
         .then(res => {
             if(res.data.Status === "Success") {
                 navigate('/login')

@@ -12,7 +12,7 @@ function ResetPassword() {
     axios.defaults.withCredentials = true;
     const handleSubmit = (e) => {
         e.preventDefault()
-        axios.post(`http://localhost:3001/resetpassword/${id}/${token}`, {password})
+        axios.post(`http://localhost:3000/resetpassword/${id}/${token}`, {password})
         .then(res => {
             if(res.data.Status === "Success") {
                 navigate('/login')

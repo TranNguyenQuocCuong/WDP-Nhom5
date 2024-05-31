@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require('../models/users');
 
 router.post('/register', async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, email } = req.body;
     
     try {
         let user = await User.findOne({ username });
@@ -13,7 +13,8 @@ router.post('/register', async (req, res) => {
 
         user = new User({
             username,
-            password
+            password,
+            email
         });
 
         await user.save();
