@@ -36,7 +36,7 @@ app.use('/api/courses', courseRoutes); // Sử dụng route courses
 app.use('/forgotpassword', forgotpasswordRoutes);
 app.use('/api/advice', adviceRoutes);
 app.use('/api/coaches', coachRoutes);
-app.use('/reports', reportRouter);
+app.use('/api/reports', reportRouter);
 app.use('/api/admins', adminRouter);
 
 
