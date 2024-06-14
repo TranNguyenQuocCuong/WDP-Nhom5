@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -48,7 +49,7 @@ const Login = () => {
                                     <button type="submit" className="btn btn-primary btn-block">Log In</button>
                                 </div>
                                 <div className="text-center mt-3">
-                                    <a href="#" className="link-primary">Forgot password?</a>
+                                    <Link to="/forgotpassword" className="link-primary">Forgot password?</Link>
                                 </div>
                                 <hr />
                                 <div className="text-center">
