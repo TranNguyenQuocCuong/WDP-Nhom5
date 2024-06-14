@@ -22,7 +22,7 @@ router.post('/', async (req, res) => {
 
         var mailOptions = {
             from: 'phandinhdan6666@gmail.com',
-            to: 'phandinhdan6602@gmail.com',
+            to: email,
             subject: 'Reset Password Link',
             text: `http://localhost:3000/resetpassword/${user._id}/${token}`
         };
