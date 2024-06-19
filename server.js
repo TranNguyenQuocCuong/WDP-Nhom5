@@ -2,6 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const User = require('./models/users');
 const AdviceRoute = require('./routes/advice');
 
@@ -10,7 +13,18 @@ const app = express();
 
 // Middleware
 app.use(bodyParser.json());
-app.use(cors());
+const allowedOrigins = ['http://localhost:3000', 'http://example2.com'];
+app.use(cors({
+  origin: function (origin, callback) {
+    // Check if the origin is allowed or not
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true // Allow credentials
+}));
 
 // Connect to MongoDB
 mongoose.connect('mongodb://127.0.0.1:27017/gym', { useNewUrlParser: true, useUnifiedTopology: true });
@@ -42,17 +56,27 @@ app.use('/api/admins', adminRouter);
 
 // Reset password route
 app.post('/resetpassword/:id/:token', (req, res) => {
-  const { id, token } = req.params;
-  const { password } = req.body;
+  const { id, token } = req.params
+  const { password } = req.body
 
-  // Here should be your logic for resetting the password
-});
+  console.log('ID:', id);
+  console.log('Token:', token);
+  console.log('Password:', password);
+  jwt.verify(token, "jwt_secret_key", (err, decoded) => {
+    if (err) {
+      return res.json({ Status: "Error with token" })
+    } else {
+      bcrypt.hash(password, 10)
+        .then(hash => {
+          User.findByIdAndUpdate({ _id: id }, { password: password })
+            .then(u => res.send({ Status: "Success" }))
+            .catch(err => res.send({ Status: err }))
+        })
+        .catch(err => res.send({ Status: err }))
+    }
+  })
+})
 
-app.use((req, res, next) => {
-  res.status(404).json({ error: 'Not Found' });
-});
-
-// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

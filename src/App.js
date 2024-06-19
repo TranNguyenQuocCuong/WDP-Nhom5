@@ -7,6 +7,7 @@ import ViewCourse from './components/viewCourse';
 import './App.css';
 import ForgotPassword from './components/forgotPassword';
 import ResetPassword from './components/resetPassword';
+import Report from './components/report';
 
 function App() {
     return (
@@ -45,6 +46,7 @@ function App() {
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/forgotpassword" element={<ForgotPassword />} />
                     <Route path="/resetpassword/:id/:token" element={<ResetPassword/>} />
+                    <Route path="/reports" element={<Report/>} />
                 </Routes>
             </div>
         </Router>
