@@ -17,7 +17,7 @@ const allowedOrigins = ['http://localhost:3000', 'http://example2.com'];
 app.use(cors({
   origin: function (origin, callback) {
     // Check if the origin is allowed or not
-    if (allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
