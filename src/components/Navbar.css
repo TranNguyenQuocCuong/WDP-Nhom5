@@ -1,0 +1,12 @@
+/* Navbar.css */
+.bg-lightblue {
+    background-color: #27b3e1 !important;
+}
+
+.navbar-brand, .nav-link {
+    color: #5ac2d6 !important;
+}
+
+.navbar-brand:hover, .nav-link:hover {
+    color: #1493be !important;
+}

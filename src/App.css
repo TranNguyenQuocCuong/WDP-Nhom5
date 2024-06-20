@@ -1,65 +1,17 @@
 /* App.css */
-nav {
-  background-color: #4CAF50; /* Change background color */
-  color: #fff;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
+
+.navbar {
+  background-color: #088cb8; /* Màu xanh dương nhạt */
 }
 
-.navbar-left {
-  flex: 1;
+.navbar-brand, .nav-link {
+  color: #9ed3f0 !important; /* Màu trắng cho văn bản */
 }
 
-.navbar-middle {
-  flex: 1;
-  display: flex;
-  justify-content: center;
+.navbar-brand:hover, .nav-link:hover {
+  color: #0072e3 !important; /* Màu sáng hơn khi hover */
 }
 
-.navbar-middle ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-.navbar-middle li {
-  display: inline;
-  margin-right: 20px;
-}
-
-.navbar-middle a {
-  color: #fff;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.navbar-middle a:hover {
-  text-decoration: underline;
-}
-
-.navbar-right {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.navbar-right ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-.navbar-right li {
-  display: inline;
-  margin-right: 10px;
-}
-
-.navbar-right a {
-  color: #fff;
-  text-decoration: none;
-}
-
-.navbar-right a:hover {
-  text-decoration: underline;
+.navbar-nav .nav-item + .nav-item {
+  margin-left: 1rem; /* Khoảng cách giữa các mục menu */
 }
