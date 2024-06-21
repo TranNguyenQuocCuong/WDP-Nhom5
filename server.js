@@ -10,6 +10,7 @@ const AdviceRoute = require('./routes/advice');
 const userRoutes = require('./routes/web');
 const { authenticateToken } = require('./middlewares/authen');
 const { changePassword, getUserProfile } = require('./controllers/userController');
+const passport = require('./passport');
 
 require('dotenv').config();
 
@@ -62,6 +63,7 @@ app.get('/', (req, res) => {
   res.send('Hello World');
 });
 
+app.use(passport.initialize());
 app.use('/api/users', userRoutes);
 
 // Reset password route

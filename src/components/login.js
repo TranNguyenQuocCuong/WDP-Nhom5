@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import FacebookLoginButton from './facebookLogin'; // Import Facebook login component
+import GoogleLoginComponent from './googleLogin';
 
-const Login = ({ onLogin }) => {
+const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -13,8 +15,8 @@ const Login = ({ onLogin }) => {
         try {
             const response = await axios.post('http://localhost:5000/api/users/login', { username, password });
             alert(response.data.msg);
-            onLogin(response.data.token); // Gọi hàm onLogin để lưu token
-            // window.location.href = '/'; // Không nên dùng để điều hướng trong React, sử dụng Navigate thay thế
+            localStorage.setItem('token', response.data.token);
+            window.location.href = '/';
         } catch (error) {
             const errorMsg = error.response && error.response.data && error.response.data.msg
                 ? error.response.data.msg
@@ -62,6 +64,11 @@ const Login = ({ onLogin }) => {
                                     <button type="submit" className="btn btn-primary btn-block">Log In</button>
                                 </div>
                             </form>
+                            <hr />
+                            <div className="d-flex justify-content-center"> {/* Add a container for social login buttons */}
+                                <FacebookLoginButton /> {/* Add Facebook login button */}
+                                <GoogleLoginComponent /> {/* Add Google login button */}
+                            </div>
                         </div>
                         <div className="card-footer text-center py-3">
                             <div className="small">

@@ -1,6 +1,7 @@
 // models/users.js
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const { default: FacebookLoginRender } = require('react-facebook-login/dist/facebook-login-render-props');
 
 const UserSchema = new mongoose.Schema({
     username: {
@@ -12,7 +13,8 @@ const UserSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
-    email: {
+    FacebookId: String,
+    email:{
         type: String,
     },
     name: {
