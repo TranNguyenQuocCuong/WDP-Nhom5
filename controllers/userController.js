@@ -67,6 +67,35 @@ const login = async (req, res) => {
   }
 };
 
+const facebookLogin = (req, res) => {
+  if (req.user) {
+    const token = jwt.sign({ id: req.user._id }, SECRET_KEY, { expiresIn: '1h' });
+    res.status(200).json({
+      success: true,
+      token: token,
+      status: 'You are successfully logged in!',
+    });
+  } else {
+    res.status(401).json({
+      success: false,
+      status: 'Failed to log in with Facebook',
+    });
+  }
+};
+
+const googleLogin = (req, res) => {
+  if (req.user) {
+      const token = jwt.sign({ id: req.user._id }, process.env.SECRET_KEY, { expiresIn: '1h' });
+      res.status(200).json({
+          success: true,
+          token: token,
+          status: 'You are successfully logged in!',
+      });
+  } else {
+      res.status(401).json({ msg: 'Authentication failed' });
+  }
+};
+
 // Route để lấy thông tin người dùng đã đăng nhập
 const userprofile = async (req, res) => {
   try {
@@ -195,5 +224,7 @@ module.exports = {
   changePassword,
   logout,
   forgotPassword,
-  userprofile
+  userprofile,
+  facebookLogin,
+  googleLogin
 };

@@ -1,6 +1,7 @@
 const { type } = require('@testing-library/user-event/dist/type');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const { default: FacebookLoginRender } = require('react-facebook-login/dist/facebook-login-render-props');
 
 const UserSchema = new mongoose.Schema({
     username: {
@@ -14,6 +15,7 @@ const UserSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
+    FacebookId: String,
     email:{
         type: String,
         required: true
