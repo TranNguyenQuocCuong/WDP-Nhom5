@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
+import './Signup.css';
+import { Link } from 'react-router-dom/cjs/react-router-dom.min'
 import axios from 'axios';
 
-const Signup = () => {
+export default function Signup() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
@@ -63,7 +65,7 @@ const Signup = () => {
                                 </div>
                                 <hr />
                                 <div className="text-center">
-                                    <p className="text-muted">Already have an account? <a href="./login" className="link-primary">Log in</a></p>
+                                    <p className="text-muted">Already have an account? <Link to="./login" className="link-primary">Log in</Link></p>
                                 </div>
                             </form>
                         </div>
@@ -73,5 +75,3 @@ const Signup = () => {
         </div>
     );
 };
-
-export default Signup;

@@ -14,56 +14,58 @@ const register = async (req, res) => {
   const { username, password, email } = req.body;
 
   try {
-      let user = await User.findOne({ username });
-      if (user) {
-          return res.status(400).json({ msg: 'Username already exists' });
-      }
+    let user = await User.findOne({ username });
+    if (user) {
+      return res.status(400).json({ msg: 'Username already exists' });
+    }
 
-      user = await User.findOne({ email });
-      if (user) {
-          return res.status(400).json({ msg: 'Email already exists' });
-      }
+    user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({ msg: 'Email already exists' });
+    }
 
-      user = new User({
-          username,
-          password,
-          email,
-      });
+    user = new User({
+      username,
+      password,
+      email,
+    });
 
-      await user.save();
-      res.status(201).json({ msg: 'Registration successful' });
+    await user.save();
+    res.status(201).json({ msg: 'Registration successful' });
   } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Server error');
+    console.error(err.message);
+    res.status(500).send('Server error');
   }
 };
 
 const login = async (req, res) => {
   const { username, password } = req.body;
   console.log('--------------LOGIN CHECK---------------\n');
-  console.log('>>> username, password: ', username,' --- ', password);
+  console.log('>>> username, password: ', username, ' --- ', password);
 
   try {
-      const user = await User.findOne({ username });
-      console.log('>>> user: ', user);
-      if (!user) {
-        console.log('Username is incorrect');
-          return res.status(400).json({ msg: 'Username is incorrect' });
-      }
+    const user = await User.findOne({ username });
+    console.log('>>> user: ', user);
+    if (!user) {
+      console.log('Username is incorrect');
+      return res.status(400).json({ msg: 'Username is incorrect' });
+    }
 
-      // So sánh mật khẩu
-      // const isMatch = await bcrypt.compare(password, user.password);
-      const isMatch = await User.findOne({ password });
-      if (!isMatch) {
-        console.log('Password is incorrect');
-          return res.status(400).json({ msg: 'Password is incorrect' });
-      }
-      console.log("LOGIN SUCCESSFULLY");
-      const token = jwt.sign({ id: user._id, username: user.username }, process.env.SECRET_KEY, { expiresIn: '1h' });
-      return res.status(200).json({ msg: 'Login success', token });
+    // So sánh mật khẩu
+    // const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await User.findOne({ password });
+    if (!isMatch) {
+      console.log('Password is incorrect');
+      return res.status(400).json({ msg: 'Password is incorrect' });
+    }
+    console.log("LOGIN SUCCESSFULLY");
+    const token = jwt.sign({ id: user._id, username: user.username }, process.env.SECRET_KEY, { expiresIn: '1h' });
+    console.log('>>> SECRET_KEY: ', process.env.SECRET_KEY);
+    console.log('>>> token: ', token);
+    return res.status(200).json({ msg: 'Login success', token });
   } catch (err) {
-      console.error(err.message);
-      return res.status(500).json({ msg: 'Server error' });
+    console.error(err.message);
+    return res.status(500).json({ msg: 'Server error' });
   }
 };
 
@@ -85,27 +87,27 @@ const facebookLogin = (req, res) => {
 
 const googleLogin = (req, res) => {
   if (req.user) {
-      const token = jwt.sign({ id: req.user._id }, process.env.SECRET_KEY, { expiresIn: '1h' });
-      res.status(200).json({
-          success: true,
-          token: token,
-          status: 'You are successfully logged in!',
-      });
+    const token = jwt.sign({ id: req.user._id }, process.env.SECRET_KEY, { expiresIn: '1h' });
+    res.status(200).json({
+      success: true,
+      token: token,
+      status: 'You are successfully logged in!',
+    });
   } else {
-      res.status(401).json({ msg: 'Authentication failed' });
+    res.status(401).json({ msg: 'Authentication failed' });
   }
 };
 
 // Route để lấy thông tin người dùng đã đăng nhập
 const userprofile = async (req, res) => {
   try {
-      // Lấy thông tin người dùng từ middleware authenticateToken đã xác thực
-      const user = await User.findById(req.user.id).select('-password');
-      console.log('>>> user1111: ', user);
-      res.json(user);
+    // Lấy thông tin người dùng từ middleware authenticateToken đã xác thực
+    const user = await User.findById(req.user.id).select('-password');
+    console.log('>>> user1111: ', user);
+    res.json(user);
   } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Server Error');
+    console.error(err.message);
+    res.status(500).send('Server Error');
   }
 };
 
