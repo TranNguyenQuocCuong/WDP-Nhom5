@@ -14,7 +14,7 @@ const UserSchema = new mongoose.Schema({
         required: true
     },
     FacebookId: String,
-    email:{
+    email: {
         type: String,
     },
     name: {
@@ -28,6 +28,9 @@ const UserSchema = new mongoose.Schema({
     },
     age: {
         type: Number
+    },
+    phone: {
+        type: String
     },
     subscribedCoach: {
         type: mongoose.Schema.Types.ObjectId,
