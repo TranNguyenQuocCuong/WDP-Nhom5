@@ -15,13 +15,13 @@ router.post('/logout', authenticateToken, logout);
 
 // router.get('/userProfile', authenticateToken, getUserProfile);
 
-router.put('/edit-profile', authenticateToken, editProfile);
+// router.put('/edit-profile', authenticateToken, editProfile);
 
 router.put('/change-password', authenticateToken, changePassword);
 
 router.post('/forgotpassword', forgotPassword);
 
-router.get('/userprofile', authenticateToken, userprofile);
+// router.get('/userprofile', authenticateToken, userprofile);
 
 router.get('/facebook/token', passport.authenticate('facebook-token'), userController.facebookLogin);
 

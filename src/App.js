@@ -1,89 +1,99 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
-import axios from 'axios';
-import Login from './components/login';
-import Signup from './components/signup';
-import ViewCoach from './components/viewCoach';
-import ViewCourse from './components/viewCourse';
-import ForgotPassword from './components/forgotPassword';
-import ResetPassword from './components/resetPassword';
-import Report from './components/report';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
+import React, { useState } from "react";
+import { HashRouter as Router, Switch, Redirect, Route, Routes } from "react-router-dom";
+import './components/Navbar.css'
+import './components/Banner.css'
+import './components/GymClass.css'
+import './components/About.css'
+import './components/ChoseUs.css'
+import './components/Team.css'
+import './components/Subscribe.css'
+import './components/MonthlyPlan.css'
+import './components/BMI.css'
+import './components/Testimonial.css'
+import './components/Footer.css'
+import './components/PageHeader.css'
+import './components/Features.css'
+import './components/Services.css'
+import './components/Contact.css'
+
+import './responsive.css'
+
+import Navbar from './components/Navbar';
+import HomeNav from "./pages/HomeNav";
+import AboutNav from "./pages/AboutNav";
+import CourseNav from "./pages/CourseNav";
+import CoachNav from "./pages/CoachNav";
+import FeaturesNav from "./pages/FeaturesNav";
+import ContactNav from "./pages/ContactNav";
+import courseDetailNav from "./pages/courseDetailNav";
+import Login from "./pages/Login";
+import ForgotPasswordNav from "./pages/ForgotPasswordNav";
+import ResetPassword from "./pages/ResetPasswordNav";
+import Signup from "./pages/Signup";
+import Checkout from "./pages/CheckoutNav";
+import UserProfile from "./pages/UserProfile";
+import Footer from './components/Footer';
+
+// import Topbar from "./admin-pages/Topbar";
+// import Sidebar from "./admin-pages/Sidebar";
+// import Dashboard from "./admin-pages/dashboard";
+// import Team from "./admin-pages/team";
+// import Invoices from "./admin-pages/invoices";
+// import Contacts from "./admin-pages/contacts";
+// import Bar from "./admin-pages/bar";
+// import Form from "./admin-pages/form";
+// import Line from "./admin-pages/line";
+// import Pie from "./admin-pages/pie";
+// import FAQ from "./admin-pages/faq";
+// import { CssBaseline, ThemeProvider } from "@mui/material";
+// import { ColorModeContext, useMode } from "./theme";
+// import Calendar from "./admin-pages/calendar";
 
 function App() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // const [theme, colorMode] = useMode();
+  // const [isSidebar, setIsSidebar] = useState(true);
 
-    useEffect(() => {
-        // Kiểm tra xem có JWT token trong localStorage hay không
-        const token = localStorage.getItem('token');
-        if (token) {
-            setIsLoggedIn(true);
-        }
-    }, []);
+  return (
+    <Router>
+      <Navbar />
 
-    const handleLogout = () => {
-        // Xóa token khỏi localStorage và đặt isLoggedIn về false
-        localStorage.removeItem('token');
-        setIsLoggedIn(false);
-    };
+      <Switch>
 
-    const handleLogin = (token) => {
-        // Lưu token vào localStorage và đặt isLoggedIn về true
-        localStorage.setItem('token', token);
-        setIsLoggedIn(true);
-    };
+        <Route exact path="/" component={HomeNav}></Route>
+        <Route exact path="/home" component={HomeNav}></Route>
+        {/* <Redirect exact from="/Gym-Website/" to="/home" /> */}
+        <Route exact path="/about" component={AboutNav}></Route>
+        <Route exact path="/course" component={CourseNav}></Route>
+        <Route exact path="/coach" component={CoachNav}></Route>
+        <Route exact path="/features" component={FeaturesNav}></Route>
+        <Route exact path="/contact" component={ContactNav}></Route>
+        <Route exact path="/login" component={Login}></Route>
+        <Route exact path="/forgotpassword" component={ForgotPasswordNav}></Route>
+        <Route path="/resetpassword/:id/:token" component={ResetPassword}></Route>
+        <Route exact path="/resetpassword" component={ResetPassword}></Route>
+        <Route exact path="/courseDetail" component={courseDetailNav}></Route>
+        <Route exact path="/signup" component={Signup}></Route>
+        <Route exact path="/checkout" component={Checkout}></Route>
+        <Route exact path="/userProfile" component={UserProfile}></Route>
 
-    return (
-        <Router>
-            <div>
-                <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                    <div className="container-fluid">
-                        <Link className="navbar-brand" to="/">Logo</Link>
-                        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                            <span className="navbar-toggler-icon"></span>
-                        </button>
-                        <div className="collapse navbar-collapse" id="navbarNav">
-                            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                                <li className="nav-item">
-                                    <Link className="nav-link" to="/view-coach">View Coach</Link>
-                                </li>
-                                <li className="nav-item">
-                                    <Link className="nav-link" to="/view-workout-course">View Workout Course</Link>
-                                </li>
-                            </ul>
-                            <ul className="navbar-nav ms-auto">
-                                {isLoggedIn ? (
-                                    <li className="nav-item">
-                                        <button className="btn btn-link nav-link" onClick={handleLogout}>Logout</button>
-                                    </li>
-                                ) : (
-                                    <>
-                                        <li className="nav-item">
-                                            <Link className="nav-link" to="/login">Login</Link>
-                                        </li>
-                                        <li className="nav-item">
-                                            <Link className="nav-link" to="/signup">Signup</Link>
-                                        </li>
-                                    </>
-                                )}
-                            </ul>
-                        </div>
-                    </div>
-                </nav>
+        //
+        {/* <Route path="/" element={<Dashboard />} />
+        <Route path="/team" element={<Team />} />
+        <Route path="/contacts" element={<Contacts />} />
+        <Route path="/invoices" element={<Invoices />} />
+        <Route path="/form" element={<Form />} />
+        <Route path="/bar" element={<Bar />} />
+        <Route path="/pie" element={<Pie />} />
+        <Route path="/line" element={<Line />} />
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/calendar" element={<Calendar />} /> */}
+      </Switch>
 
-                <Routes>
-                    <Route path="/view-coach" element={<ViewCoach />} />
-                    <Route path="/view-workout-course" element={<ViewCourse />} />
-                    <Route path="/login" element={<Login onLogin={handleLogin} />} />
-                    <Route path="/signup" element={<Signup />} />
-                    <Route path="/forgotpassword" element={<ForgotPassword />} />
-                    <Route path="/resetpassword/:id/:token" element={<ResetPassword/>} />
-                    <Route path="/reports" element={<Report/>} />
-                </Routes>
-            </div>
-        </Router>
-    );
+      <Footer />
+    </Router>
+
+
+  );
 }
 
 export default App;

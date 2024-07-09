@@ -1,13 +1,119 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@font-face {
+  font-family: "Flaticon";
+  src: url("./lib/flaticon/font/Flaticon.eot");
+  src: url("./lib/flaticon/font/Flaticon.eot?#iefix") format("embedded-opentype"),
+    url("./lib/flaticon/font/Flaticon.woff2") format("woff2"),
+    url("./lib/flaticon/font/Flaticon.woff") format("woff"),
+    url("./lib/flaticon/font/Flaticon.ttf") format("truetype"),
+    url("./lib/flaticon/font/Flaticon.svg#Flaticon") format("svg");
+  font-weight: normal;
+  font-style: normal;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+* {
+
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+
+}
+
+html {
+
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap");
+
+html,
+body,
+#root,
+.app,
+.content {
+  height: 100%;
+  width: 100%;
+  font-family: "Source Sans Pro", sans-serif;
+}
+
+.app {
+  display: flex;
+  position: relative;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #e0e0e0;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+body {
+  overflow-x: hidden;
+
+}
+
+[class^="flaticon-"]:before {
+  font-family: Flaticon;
+  font-size: inherit;
+  margin-left: 0;
+  font-style: normal;
+
+}
+
+
+.flaticon-barbell:before {
+  content: "\f100";
+}
+
+.flaticon-treadmill:before {
+  content: "\f101";
+}
+
+.flaticon-six-pack:before {
+  content: "\f102";
+}
+
+.flaticon-bodybuilding:before {
+  content: "\f103";
+}
+
+.flaticon-medal:before {
+  content: "\f104";
+}
+
+.flaticon-muscular-bodybuilder-with-clock:before {
+  content: "\f105";
+}
+
+.flaticon-trends:before {
+  content: "\f106";
+}
+
+.flaticon-weightlifting:before {
+  content: "\f107";
+}
+
+.flaticon-training:before {
+  content: "\f108";
+}
+
+.flaticon-support:before {
+  content: "\f109";
+}
+
+.flaticon-stationary-bike:before {
+  content: "\f121";
 }
