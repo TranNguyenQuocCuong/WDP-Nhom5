@@ -13,6 +13,22 @@ const AttendanceSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
+    timeStartMinute: {
+        type: String,
+        required: true
+    },
+    timeStartHour: {
+        type: String,
+        required: true
+    },
+    timeEndMinute: {
+        type: String,
+        required: true
+    },
+    timeEndHour: {
+        type: String,
+        required: true
+    },
     status: {
         type: String,
         required: true

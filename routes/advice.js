@@ -5,22 +5,15 @@ const router = express.Router();
 const Advice = require('../models/advice');
 const Coach = require('../models/coaches');
 const User = require('../models/users');
+const { authenticateToken } = require('../middlewares/authen');
 
 // Route để huấn luyện viên gửi lời khuyên cho người dùng
-router.post('/send', async (req, res) => {
-    const { coachId, userId, message } = req.body;
+router.post('/send', authenticateToken, async (req, res) => {
+    const {userId, message } = req.body;
 
     try {
         // Kiểm tra xem huấn luyện viên và người dùng có tồn tại không
-        const coach = await Coach.findById(coachId);
-        if (!coach) {
-            return res.status(404).json({ msg: 'Coach not found' });
-        }
-
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ msg: 'User not found' });
-        }
+        const coachId = req.user.id
 
         // Tạo lời khuyên mới
         const newAdvice = new Advice({

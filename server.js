@@ -44,6 +44,8 @@ const coachRoutes = require('./routes/coaches');
 const adminRouter = require('./routes/adminRouter');
 const reportRouter = require('./routes/reportRouter');
 const paymentRoutes = require('./routes/payment');
+const attendanceRoutes = require('./routes/attendance');
+const workoutRoutes = require('./routes/workouts');
 
 app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes); // Sử dụng route courses
@@ -53,6 +55,8 @@ app.use('/api/coaches', coachRoutes);
 app.use('/api/reports', reportRouter);
 app.use('/api/admins', adminRouter);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api/workouts', workoutRoutes);
 
 // Reset password route
 app.post('/resetpassword/:id/:token', (req, res) => {

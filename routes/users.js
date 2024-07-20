@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 const { authenticateToken } = require('../middlewares/authen');
+const Progress = require('../models/progress');
 
 // Route to register a new user
 router.post('/register', async (req, res) => {
@@ -237,5 +238,54 @@ router.put('/change-password', async (req, res) => {
     }
 });
 
+router.get('/', async (req, res) => {
+    const { coach } = req.query;
+
+    try {
+        if (!coach) {
+            return res.status(400).json({ message: 'No coach IDs provided in query' });
+        }
+
+        const coachIds = coach.split(',').map(id => id.trim()); // Ensure coachIds is an array of trimmed IDs
+
+        if (coachIds.length === 0) {
+            return res.status(400).json({ message: 'No valid coach IDs provided in query' });
+        }
+
+        const users = await User.find({ subscribedCoach: { $in: coachIds } });
+
+        res.json(users);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error retrieving users' });
+    }
+});
+
+router.get('/:id/progress', authenticateToken, async (req, res) => {
+    try {
+        const progress = await Progress.findOne({ userId: req.params.id });
+        if (!progress) return res.status(404).json({ message: 'Progress not found' });
+        res.json(progress);
+    } catch (error) {
+        console.error('Error fetching user progress:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+router.put('/:id/progress', authenticateToken, async (req, res) => {
+    const { weight, height} = req.body;
+    try {
+        const progress = await Progress.findOneAndUpdate(
+            { userId: req.params.id },
+            { weight, height},
+            { new: true }
+        );
+        if (!progress) return res.status(404).json({ message: 'Progress not found' });
+        res.json(progress);
+    } catch (error) {
+        console.error('Error updating user progress:', error);
+        res.status(500).send('Server error');
+    }
+});
 
 module.exports = router;

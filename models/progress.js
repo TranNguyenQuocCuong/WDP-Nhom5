@@ -16,10 +16,6 @@ const ProgressSchema = new mongoose.Schema({
     height: {
         type: String,
         required: true
-    },
-    date: {
-        type: Date,
-        required: true
     }
 });
 

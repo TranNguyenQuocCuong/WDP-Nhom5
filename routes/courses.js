@@ -2,26 +2,104 @@ const express = require('express');
 const router = express.Router();
 const Course = require('../models/courses');
 const User = require('../models/users');
+const Coach = require('../models/coaches');
+const Workout = require('../models/workout');
+require('dotenv').config();
 
-// Route để tạo khóa học mới
-router.post('/', async (req, res) => {
-    const { name, description, workouts, coaches } = req.body;
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+
+const {authenticateToken} = require('../middlewares/authen')
+
+router.get('/', async (req, res) => {
+    try {
+        const courses = await Course.find();
+        res.json(courses);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+//   router.get('/:courseId', async (req, res) => {
+//     const courseId = req.params.courseId;
+
+//     try {
+//         const course = await Course.findById(courseId);
+
+//         if (!course) {
+//             return res.status(404).json({ message: 'Course not found' });
+//         }
+
+//         res.json(course);
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ message: 'Error retrieving course' });
+//     }
+// });
+
+router.get('/my-courses', authenticateToken, async (req, res) => {
+    const coachId = req.user.id;
 
     try {
-        const newCourse = new Course({
-            name,
-            description,
-            workouts,
-            coaches
-        });
+        console.log('Coach ID:', coachId);
 
-        const course = await newCourse.save();
-        res.status(201).json(course);
+        const courses = await Course.find({ coaches: { $in: [coachId] } });
+        console.log('Courses found:', courses);
+
+        res.json(courses);
     } catch (err) {
-        console.error(err.message);
+        console.error('Error fetching user courses:', err);
         res.status(500).send('Server error');
     }
 });
+router.get('/:courseId/workouts', async (req, res) => {
+    const courseId = req.params.courseId;
+
+    try {
+        const course = await Course.findById(courseId).populate('workouts');
+        if (!course) {
+            return res.status(404).json({ message: 'Course not found' });
+        }
+
+        res.json(course.workouts);
+    } catch (error) {
+        console.error('Error fetching workouts:', error);
+        res.status(500).send('Server error');
+    }
+});
+router.post('/', authenticateToken, (req, res, next) => {
+    console.log(req.user);
+    const coachId = req.user.id;
+    const courseData = { ...req.body, coaches: [coachId] };
+  
+    Course.create(courseData)
+      .then((course) => {
+        console.log('Course Created ', course);
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json(course);
+      })
+      .catch((err) => next(err));
+  });
+// router.post('/', authenticateToken, async (req, res) => {
+//     const userId = req.course.id;
+//     const { name, description, workouts, coaches } = req.body;
+
+//     try {
+//         const newCourse = new Course({
+//             name,
+//             description,
+//             workouts,
+//             coaches
+//         });
+
+//         const course = await newCourse.save();
+//         res.status(201).json(course);
+//     } catch (err) {
+//         console.error(err.message);
+//         res.status(500).send('Server error');
+//     }
+// });
 
 // Route để xem các khóa học đã đăng ký theo ID người dùng
 router.get('/subscribed/:userId', async (req, res) => {
@@ -95,5 +173,6 @@ router.post('/', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
 
 module.exports = router;

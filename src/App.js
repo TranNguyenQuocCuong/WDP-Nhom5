@@ -18,7 +18,7 @@ import './components/Contact.css'
 
 import './responsive.css'
 
-import Navbar from './components/Navbar';
+import Navbar from './components/navbar';
 import HomeNav from "./pages/HomeNav";
 import AboutNav from "./pages/AboutNav";
 import CourseNav from "./pages/CourseNav";
@@ -33,6 +33,13 @@ import Signup from "./pages/Signup";
 import Checkout from "./pages/CheckoutNav";
 import UserProfile from "./pages/UserProfile";
 import Footer from './components/Footer';
+import ViewAndSubmitCourse from "./components/ViewAndSubmitCourse";
+import ViewAndSubmitCourseNav from "./pages/ViewAndSubmitCourseNav";
+import GiveAdviceNav from "./pages/GiveAdviceNav";
+import EditProfileNav from "./pages/EditProfileNav";
+import TakeAttendanceNav from "./pages/TakeAttendanceNav";
+import CoachDashboardNav from "./pages/CoachDashBoardNav";
+import CoachLoginNav from "./pages/CoachLoginNav";
 
 // import Topbar from "./admin-pages/Topbar";
 // import Sidebar from "./admin-pages/Sidebar";
@@ -75,7 +82,12 @@ function App() {
         <Route exact path="/signup" component={Signup}></Route>
         <Route exact path="/checkout" component={Checkout}></Route>
         <Route exact path="/userProfile" component={UserProfile}></Route>
-
+        <Route exact path="/coachProfile" component={EditProfileNav} />
+        <Route exact path="/giveAdvice" component={GiveAdviceNav} />
+        <Route exact path="/createCourse" component={ViewAndSubmitCourseNav} />
+        <Route exact path="/takeAttendance" component={TakeAttendanceNav} />
+        <Route exact path="/coachDashboard" component={CoachDashboardNav} />
+        <Route exact path="/coachLogin" component={CoachLoginNav} />
         //
         {/* <Route path="/" element={<Dashboard />} />
         <Route path="/team" element={<Team />} />

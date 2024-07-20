@@ -1,4 +1,3 @@
-// models/users.js
 const mongoose = require('mongoose');
 
 const ReportSchema = new mongoose.Schema({
@@ -9,6 +8,10 @@ const ReportSchema = new mongoose.Schema({
     data: {
         type: String,
         required: true
+    },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }
 });
 

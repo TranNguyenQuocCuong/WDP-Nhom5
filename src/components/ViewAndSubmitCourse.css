@@ -1,0 +1,117 @@
+.view-submit-course {
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.view-submit-course h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 24px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+.view-submit-course form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+}
+
+.view-submit-course input,
+.view-submit-course textarea {
+    margin-bottom: 15px;
+    padding: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.view-submit-course input:focus,
+.view-submit-course textarea:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.view-submit-course button {
+    padding: 12px;
+    width: 100%;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.view-submit-course button:hover {
+    background-color: #2980b9;
+}
+
+.view-submit-course h3 {
+    color: #2c3e50;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-size: 20px;
+}
+
+.view-submit-course table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 20px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.view-submit-course th, .view-submit-course td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.view-submit-course th {
+    background-color: #3498db;
+    color: white;
+    font-weight: 500;
+}
+
+.view-submit-course tr:last-child td {
+    border-bottom: none;
+}
+
+.view-submit-course tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.view-submit-course ul {
+    margin: 0;
+    padding: 0;
+}
+
+.view-submit-course ul li {
+    list-style-type: none;
+    margin-bottom: 5px;
+    padding: 5px;
+    background-color: #ecf0f1;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+@media (max-width: 600px) {
+    .view-submit-course {
+        padding: 20px;
+    }
+
+    .view-submit-course table {
+        font-size: 14px;
+    }
+}

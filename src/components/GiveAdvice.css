@@ -1,0 +1,19 @@
+.give-advice {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.give-advice form {
+    display: flex;
+    flex-direction: column;
+}
+
+.give-advice select,
+.give-advice textarea {
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.give-advice button {
+    padding: 10px;
+}

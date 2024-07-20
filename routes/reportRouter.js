@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const {authenticateToken} = require('../middlewares/authen')
 
 const Reports = require('../models/report');
 
@@ -17,8 +18,12 @@ reportRouter.get('/', (req, res, next) => {
     .catch((err) => next(err));
 });
 
-reportRouter.post('/', (req, res, next) => {
-    Reports.create(req.body)
+reportRouter.post('/', authenticateToken, (req, res, next) => {
+  console.log(req.user);
+  const userId = req.user.id;
+  const reportData = { ...req.body, userId };
+
+  Reports.create(reportData)
     .then((report) => {
       console.log('Report Created ', report);
       res.statusCode = 200;
