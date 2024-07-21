@@ -55,7 +55,7 @@ router.post('/forgotpassword', async (req, res) => {
             from: 'phandinhdan6666@gmail.com',
             to: email,
             subject: 'Reset Password Link',
-            text: `http://localhost:3000/resetpassword/${user._id}/${token}`
+            text: `http://localhost:3000/#/resetpassword/${user._id}/${token}`
         };
 
         transporter.sendMail(mailOptions, function (error, info) {

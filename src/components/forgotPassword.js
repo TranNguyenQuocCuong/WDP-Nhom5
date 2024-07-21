@@ -20,7 +20,6 @@ export default function ForgotPassword() {
                 setLoading(false);
                 if (res.data.Status === "Success") {
                     setMessage('Check your email for further instructions.');
-                    setTimeout(() => history.push('/resetpassword'), 3000);
                 } else {
                     setMessage('An error occurred. Please try again.');
                 }
