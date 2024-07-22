@@ -1,0 +1,82 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    margin-top: 20px;
+}
+
+.content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.calendar-cell.completed {
+    background-color: rgb(30, 225, 30);
+    color: rgb(0, 0, 0);
+}
+
+
+.calendar-cell {
+    height: 100px;
+    border: 1px solid #dee2e6;
+    padding: 10px;
+    position: relative;
+    cursor: pointer;
+}
+
+.calendar-cell:hover {
+    background-color: #f0f0f0;
+}
+
+.calendar-cell.past {
+    /* background-color: #f8f9fa; */
+    color: #000000;
+}
+
+.calendar-cell.today {
+    /* background-color: #007bff; */
+    color: rgb(0, 0, 0);
+}
+
+.event-list {
+    border: 1px solid #dee2e6;
+    padding: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.search-input {
+    margin-bottom: 10px;
+}
+
+.event-item {
+    padding: 8px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.event-item:hover {
+    background-color: #f0f0f0;
+}
+
+.alert {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.alert.show {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .content {
+        padding: 10px;
+    }
+}

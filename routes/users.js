@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/users');
+const Order = require('../models/Order');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
@@ -237,5 +238,19 @@ router.put('/change-password', async (req, res) => {
     }
 });
 
+
+// Fetch User Transactions by User ID
+router.get('/:userId/transactions', async (req, res) => {
+    const { userId } = req.params;
+    console.log('>>> userId transaction', userId);
+    try {
+        // Fetch orders for the specified user
+        const orders = await Order.find({ user: userId }).sort({ createdAt: -1 });
+        res.status(200).json(orders);
+    } catch (error) {
+        console.error('Error fetching transactions:', error);
+        res.status(500).json({ message: 'Error fetching transactions' });
+    }
+});
 
 module.exports = router;

@@ -85,7 +85,8 @@ router.post('/', async (req, res) => {
             email,
             name,
             address,
-            age
+            age,
+            experience
         });
 
         const coach = await newCoach.save();

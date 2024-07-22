@@ -1,49 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { Link, BrowserRouter as Router, Routes, Route, } from 'react-router-dom';
-import { NavLink } from 'react-router-dom/cjs/react-router-dom.min';
+import { Link, NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faShoppingCart, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import { useCart } from '../context/CartContext';  // Import useCart hook
 import './Navbar.css';
+
 
 export default function Navbar() {
   const [isMenuOpen, setMenuOpen] = useState(false);
-  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [isWorkoutDropdownOpen, setWorkoutDropdownOpen] = useState(false);
+  const [isUserDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [profile, setProfile] = useState(null);
+  const [name, setName] = useState('');
+  const [subscribedCourses, setSubscribedCourses] = useState([]);
+
+  const { getCartItemCount } = useCart();  // Get cart item count
 
   const toggleMenu = () => {
     setMenuOpen(!isMenuOpen);
   };
 
-  const toggleDropdown = () => {
-    setDropdownOpen(!isDropdownOpen);
+  const toggleWorkoutDropdown = () => {
+    setWorkoutDropdownOpen(!isWorkoutDropdownOpen);
+    setUserDropdownOpen(false);
   };
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const toggleUserDropdown = () => {
+    setUserDropdownOpen(!isUserDropdownOpen);
+    setWorkoutDropdownOpen(false);
+  };
 
   useEffect(() => {
-    // Kiểm tra xem có JWT token trong localStorage hay không
     const token = localStorage.getItem('token');
-    console.log('>>> token: ', token);
     if (token) {
       setIsLoggedIn(true);
     }
-  }, []);
 
-  const handleLogin = (token) => {
-    // Lưu token vào localStorage và đặt isLoggedIn về true
-    localStorage.setItem('token', token);
-    setIsLoggedIn(true);
-  };
-
-  const handleLogout = () => {
-    // Xóa token khỏi localStorage và đặt isLoggedIn về false
-    localStorage.removeItem('token');
-    setIsLoggedIn(false);
-  };
-
-  const [profile, setProfile] = useState(null);
-  const [name, setName] = useState('');
-  useEffect(() => {
     const fetchProfile = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/users/userProfile', {
@@ -53,14 +47,21 @@ export default function Navbar() {
         });
         setProfile(response.data);
         setName(response.data.name);
-
+        setSubscribedCourses(response.data.subscribedCourses || []);
       } catch (error) {
         console.error('Error fetching profile:', error);
       }
     };
 
-    fetchProfile();
+    if (token) {
+      fetchProfile();
+    }
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+  };
 
   return (
     <div id="navBar" className="position-absolute">
@@ -99,11 +100,11 @@ export default function Navbar() {
                   About Us
                 </NavLink>
               </li>
-              <li className="nav-item dropdown" onMouseEnter={toggleDropdown} onMouseLeave={toggleDropdown}>
-                <span className="nav-link dropdown-toggle">
+              <li className="nav-item dropdown" onMouseEnter={toggleWorkoutDropdown} onMouseLeave={() => setWorkoutDropdownOpen(false)}>
+                <span className="nav-link dropdown-toggle" style={{ color: '#fff' }}>
                   Workout Plan
                 </span>
-                <div className={`dropdown-menu ${isDropdownOpen ? 'show' : ''}`}>
+                <div className={`dropdown-menu ${isWorkoutDropdownOpen ? 'show' : ''}`} style={{ backgroundColor: '#000' }}>
                   <NavLink className="dropdown-item" activeClassName="active" to="/course">
                     Course
                   </NavLink>
@@ -113,8 +114,8 @@ export default function Navbar() {
                 </div>
               </li>
               <li className="nav-item">
-                <NavLink className="nav-link" activeClassName="active" to="/features">
-                  Features
+                <NavLink className="nav-link" activeClassName="active" to="/shop">
+                  Shop
                 </NavLink>
               </li>
               <li className="nav-item">
@@ -122,16 +123,35 @@ export default function Navbar() {
                   Contact
                 </NavLink>
               </li>
+
               {isLoggedIn ? (
-                <li className="nav-item">
-                  <NavLink className="nav-link" activeClassName="active" to="/userProfile">
+                <li className="nav-item dropdown" onMouseEnter={toggleUserDropdown} onMouseLeave={() => setUserDropdownOpen(false)} style={{ position: 'relative' }}>
+                  <span className="nav-link dropdown-toggle" style={{ color: '#fff', display: 'flex', alignItems: 'center' }}>
                     <FontAwesomeIcon icon={faUser} /><span style={{ marginLeft: '8px' }}>{name}</span>
-
-                  </NavLink>
-
-                  <button className="btn btn-link nav-link" onClick={handleLogout}>Logout</button>
+                  </span>
+                  <div className={`dropdown-menu ${isUserDropdownOpen ? 'show' : ''}`} style={{ backgroundColor: '#000', padding: '10px', borderRadius: '8px' }}>
+                    <NavLink className="nav-link" activeClassName="active" to="/userProfile">
+                      User Profile
+                    </NavLink>
+                    {subscribedCourses.length > 0 && (
+                      <>
+                        <NavLink className="nav-link" activeClassName="active" to="/userSchedule">
+                          User Schedule
+                        </NavLink>
+                        <NavLink className="nav-link" activeClassName="active" to="/editUserSchedule">
+                          Edit Schedule
+                        </NavLink>
+                      </>
+                    )}
+                    <NavLink className="nav-link" activeClassName="active" to="/user/transactions">
+                      User Transaction
+                    </NavLink>
+                    <button className="btn btn-link nav-link" onClick={handleLogout} style={{ color: '#fff', backgroundColor: 'transparent', display: 'flex', alignItems: 'center' }}>
+                      <FontAwesomeIcon icon={faSignOutAlt} style={{ marginRight: '8px' }} />
+                      Logout
+                    </button>
+                  </div>
                 </li>
-
               ) : (
                 <li className="nav-item">
                   <NavLink className="nav-link" activeClassName="active" to="/login">
@@ -139,22 +159,13 @@ export default function Navbar() {
                   </NavLink>
                 </li>
               )}
-              {/* <li>
-                {isLoggedIn ? (
-                  <li className="nav-item">
-                    <button className="btn btn-link nav-link" onClick={handleLogout}>Logout</button>
-                  </li>
-                ) : (
-                  <>
-                    <li className="nav-item">
-                      <Link className="nav-link" to="/login">Login</Link>
-                    </li>
-                    <li className="nav-item">
-                      <Link className="nav-link" to="/signup">Signup</Link>
-                    </li>
-                  </>
-                )}
-              </li> */}
+
+              <li className="nav-item">
+                <NavLink className="nav-link" activeClassName="active" to="/cart">
+                  <FontAwesomeIcon icon={faShoppingCart} />
+                  <span className="badge bg-primary">{getCartItemCount()}</span> {/* Display cart item count */}
+                </NavLink>
+              </li>
             </ul>
           </div>
         </div>

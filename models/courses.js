@@ -1,4 +1,3 @@
-// models/courses.js
 const mongoose = require('mongoose');
 
 const CourseSchema = new mongoose.Schema({
@@ -10,14 +9,18 @@ const CourseSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    workouts: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Workout'
-    }],
-    coaches: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Coach'
-    }]
+    time: {
+        type: Number,
+        required: true
+    },
+    price: {
+        type: Number,
+        required: true
+    },
+    action: {
+        type: Boolean,
+        required: true
+    }
 });
 
 const Course = mongoose.model('Course', CourseSchema);

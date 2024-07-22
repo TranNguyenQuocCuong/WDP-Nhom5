@@ -11,7 +11,6 @@ export default function AboutNav() {
             <About />
             <Features />
             <Team />
-
         </>
     )
 }

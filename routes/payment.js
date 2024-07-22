@@ -7,46 +7,33 @@ const { log } = require('console');
 const dateFormat = require("dateformat");
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
+const session = require('express-session');
+const nodemailer = require('nodemailer');
+
 
 router.post("/momopayment", async (req, res) => {
-    //https://developers.momo.vn/#/docs/en/aiov2/?id=payment-method
-    //parameters
     var accessKey = 'F8BBA842ECF85';
     var secretKey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
     var orderInfo = 'pay with MoMo';
     var partnerCode = 'MOMO';
-    // var redirectUrl = 'https://webhook.site/b3088a6a-2d17-4f8d-a383-71389a6c600b';
-    var redirectUrl = 'http://localhost:5000/api/users/payment-success';
+    var redirectUrl = 'http://localhost:5000/api/payments/payment-success';
     var ipnUrl = 'https://webhook.site/b3088a6a-2d17-4f8d-a383-71389a6c600b';
-    var requestType = "payWithMethod";
-    // var amount = '100000';
+    var requestType = "captureWallet";
     var amount = req.body.coursePrice || 0;
-    console.log(">>> amount: ", amount)
-    // var orderId = partnerCode + new Date().getTime();
     var orderId = `FitZone-${new Date().getTime()}-${uuidv4()}`;
     var requestId = orderId;
     var extraData = '';
-    var paymentCode = 'T8Qii53fAXyUftPV3m9ysyRhEanUs9KlOPfHgpMR0ON50U10Bh+vZdpJU7VY4z+Z2y77fJHkoDc69scwwzLuW5MzeUKTwPo3ZMaB29imm6YulqnWfTkgzqRaion+EuD7FN9wZ4aXE1+mRt0gHsU193y+yxtRgpmY7SDMU9hCKoQtYyHsfFR5FUAOAKMdw2fzQqpToei3rnaYvZuYaxolprm9+/+WIETnPUDlxCYOiw7vPeaaYQQH0BF0TxyU3zu36ODx980rJvPAgtJzH1gUrlxcSS1HQeQ9ZaVM1eOK/jl8KJm6ijOwErHGbgf/hVymUQG65rHU2MWz9U8QUjvDWA==';
-    var orderGroupId = '';
     var autoCapture = true;
     var lang = 'vi';
 
-    //before sign HMAC SHA256 with format
-    //accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$requestId&requestType=$requestType
     var rawSignature = "accessKey=" + accessKey + "&amount=" + amount + "&extraData=" + extraData + "&ipnUrl=" + ipnUrl + "&orderId=" + orderId + "&orderInfo=" + orderInfo + "&partnerCode=" + partnerCode + "&redirectUrl=" + redirectUrl + "&requestId=" + requestId + "&requestType=" + requestType;
-    //puts raw signature
-    console.log("--------------------RAW SIGNATURE----------------")
-    console.log(rawSignature)
-    //signature
+
     const crypto = require('crypto');
     var signature = crypto.createHmac('sha256', secretKey)
         .update(rawSignature)
         .digest('hex');
-    console.log("--------------------SIGNATURE----------------")
-    console.log(signature)
 
-    //json object send to MoMo endpoint
-    const requestBody = JSON.stringify({
+    const requestBody = {
         partnerCode: partnerCode,
         partnerName: "Test",
         storeId: "MomoTestStore",
@@ -60,19 +47,18 @@ router.post("/momopayment", async (req, res) => {
         requestType: requestType,
         autoCapture: autoCapture,
         extraData: extraData,
-        orderGroupId: orderGroupId,
         signature: signature
-    });
+    };
 
     const options = {
         method: 'POST',
         url: 'https://test-payment.momo.vn/v2/gateway/api/create',
         headers: {
             'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(requestBody)
+            'Content-Length': Buffer.byteLength(JSON.stringify(requestBody))
         },
         data: requestBody
-    }
+    };
 
     try {
         const result = await axios(options);
@@ -86,22 +72,131 @@ router.post("/momopayment", async (req, res) => {
             message: "server error"
         });
     }
+
+
+    /////////////////////////////////////////////////////
+
+
+
+
+    const { coursePrice, name, email, phone, courseId } = req.body;
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'phandinhdan6666@gmail.com',
+            pass: 'nxum kgxi agdf rnvi'
+        }
+    });
+
+    var mailOptions = {
+        from: 'phandinhdan6666@gmail.com',
+        to: email,
+        subject: 'Member registration successful',
+        html: `
+            <h1>Member registration successful</h1>
+            <p>Dear ${name},</p>
+            <p>Thank you for registering for our course. We are delighted to have you join us!</p>
+            <p>Here are the details of your registration:</p>
+            <ul>
+                <li><strong>Name:</strong> ${name}</li>
+                <li><strong>Email:</strong> ${email}</li>
+                <li><strong>Phone Number:</strong> ${phone}</li>
+                <li><strong>Course Price:</strong> ${coursePrice} VNĐ</li>
+            </ul>
+            <p>If you have any questions or need further assistance, please feel free to contact us.</p>
+            <p>Best regards,<br>Your Organization</p>
+        `
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+            return res.status(500).send({ Status: "Error", Error: error.message });
+        } else {
+            console.log('Email sent: ' + info.response);
+            return res.send({ Status: "Success" });
+        }
+    });
+
+    // try {
+    //     // Tìm người dùng dựa trên userId
+    //     const user = await User.findOne({ email });
+
+    //     if (!user) {
+    //         return res.status(404).json({ message: 'User not found' });
+    //     }
+
+    //     // Kiểm tra xem courseId đã có trong mảng subscribedCourses chưa
+    //     if (user.subscribedCourses.includes(courseId)) {
+    //         return res.status(400).json({ message: 'Course already subscribed' });
+    //     }
+
+    //     // Thêm courseId vào mảng subscribedCourses
+    //     user.subscribedCourses.push(courseId);
+
+    //     // Lưu thay đổi vào MongoDB
+    //     await user.save();
+
+    //     return res.status(200).json({ message: 'Course added successfully', user });
+    // } catch (error) {
+    //     console.error('Error adding course to user:', error);
+    //     return res.status(500).json({ message: 'Server error' });
+    // }
+
+
+    /////////////////////////////////////////////////////
+
+
+
+
+
+
+    try {
+        // Tìm người dùng dựa trên email
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            console.log('User not found');
+        }
+
+        // Kiểm tra xem courseId đã có trong mảng subscribedCourses chưa
+        if (user.subscribedCourses.includes(courseId)) {
+            console.log('Course already subscribed');
+        }
+
+        // Thêm courseId vào mảng subscribedCourses
+        user.subscribedCourses.push(courseId);
+
+        // Lưu thay đổi vào MongoDB
+        await user.save();
+
+        // Gửi phản hồi thành công
+        console.log('Course added successfully');
+
+    } catch (error) {
+        console.error('Error adding course to user:', error);
+    }
+
+
+
+    /////////////////////////////////////////////////////
 });
 
-router.get("/payment-success", (req, res) => {
+router.get("/payment-success", async (req, res) => {
     const { orderId, resultCode, message } = req.query;
+    const email = req.session.email;
+    console.log('>>> email 333: ', email);
 
-    console.log(`>>> resultCode: `, resultCode);
     if (resultCode === '0') {
-        // Thanh toán thành công
-        res.send(`Giao dịch thành công. Mã đơn hàng: ${orderId}`);
-        console.log(`Giao dịch thành công. Mã đơn hàng: ${orderId}`)
+        console.log(`Giao dịch thành công. Mã đơn hàng: ${orderId}`);
+        // res.send(`Giao dịch thành công. Mã đơn hàng: ${orderId}`);
+        return res.redirect('http://localhost:3000/Gym-Website#/course');
     } else {
-        // Thanh toán thất bại
+        console.log(`Giao dịch thất bại. Thông báo từ MoMo: ${message}`);
         res.send(`Giao dịch thất bại. Thông báo từ MoMo: ${message}`);
-        console.log(`Giao dịch thất bại. Thông báo từ MoMo: ${message}`)
     }
 });
+
 
 function sortObject(obj) {
     let sorted = {};
@@ -183,10 +278,18 @@ router.post('/vnppayment', function (req, res, next) {
     console.log(vnpUrl)
     console.log('----------------------------------URL------------------------------')
 
+    const { coursePrice, name, email, phone, courseId } = req.body;
+    console.log('>>> email 1111: ', email);
+    req.session.email = email;
+    console.log('>>> req.session.email: ', req.session.email);
+
     res.status(200).json({ payUrl: vnpUrl });
 });
 
 router.get('/vnpay_ipn', function (req, res, next) {
+    const email = req.session.email;
+    console.log('>>> email 3333: ', email);
+
     let vnp_Params = req.query;
     let secureHash = vnp_Params['vnp_SecureHash'];
 
@@ -219,6 +322,7 @@ router.get('/vnpay_ipn', function (req, res, next) {
                         //thanh cong
                         //paymentStatus = '1'
                         // Ở đây cập nhật trạng thái giao dịch thanh toán thành công vào CSDL của bạn
+                        console.log('>>> email 4444: ', email);
                         console.log('>>> rspCode: ', rspCode);
                         res.status(200).json({ RspCode: '00', Message: 'Da Thanh Toan' })
                     }
@@ -227,7 +331,8 @@ router.get('/vnpay_ipn', function (req, res, next) {
                         //paymentStatus = '2'
                         // Ở đây cập nhật trạng thái giao dịch thanh toán thất bại vào CSDL của bạn
                         console.log('>>> rspCode: ', rspCode);
-                        res.status(200).json({ RspCode: '24', Message: 'Huy' })
+                        // res.status(200).json({ RspCode: '24', Message: 'Huy' })
+                        res.redirect('http://localhost:3000/#/course');
                     }
                 }
                 else {

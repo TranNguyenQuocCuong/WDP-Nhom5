@@ -1,0 +1,178 @@
+.completed {
+    background-color: rgb(90, 95, 90);
+}
+
+
+.mark-complete-button {
+    background-color: #535553;
+    /* Green background */
+    color: white;
+    /* White text */
+    border: none;
+    /* Remove border */
+    padding: 10px 20px;
+    /* Some padding */
+    text-align: center;
+    /* Center the text */
+    text-decoration: none;
+    /* Remove underline */
+    display: inline-block;
+    /* Make the button inline-block */
+    font-size: 16px;
+    /* Increase font size */
+    margin: 10px 0;
+    /* Some margin */
+    cursor: pointer;
+    /* Pointer/hand icon */
+    border-radius: 5px;
+    /* Rounded corners */
+}
+
+.mark-complete-button:hover {
+    background-color: #bfbfbf;
+    /* Darker green on hover */
+}
+
+.completed {
+    background-color: lightgreen;
+    /* Light green background for completed rows */
+}
+
+
+.user-schedule {
+    margin: 20px;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.schedule-table th,
+.schedule-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.schedule-table th {
+    background-color: #f2f2f2;
+}
+
+.schedule-table tr:hover {
+    /* background-color: #f5f5f5; */
+    cursor: pointer;
+}
+
+.workout-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #000000;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    padding: 20px;
+    width: 90%;
+    max-width: 1500px;
+    overflow-y: auto;
+    max-height: 80vh;
+}
+
+.workout-popup-content {
+    padding: 20px;
+    margin: 20px;
+    /* add some margin to create breathing room */
+    width: calc(100% - 40px);
+    /* subtract 40px from the width to account for padding */
+    max-height: calc(100% - 40px);
+    /* subtract 40px from the height to account for padding */
+    overflow-y: auto;
+    text-align: center;
+}
+
+.workout-popup-close {
+    position: absolute;
+    top: 10px;
+    color: #ffffff;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.workout-popup-close:hover {
+    color: #858484;
+}
+
+.workout-popup h2 {
+    margin-top: 0;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.workout-popup ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.workout-popup li {
+    margin-top: 100px;
+}
+
+.workout-popup li h3 {
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 0;
+    color: #ffffff;
+    margin-bottom: 60px;
+}
+
+.workout-popup li p {
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+
+.workout-popup li strong {
+    font-weight: bold;
+}
+
+/* Add some responsive styles */
+@media (max-width: 768px) {
+    .workout-popup {
+        width: 80%;
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .workout-popup {
+        width: 90%;
+        max-width: 250px;
+    }
+}
+
+
+h2 {
+    color: #0088c7;
+    font-size: 30px !important;
+}
+
+h3 {
+    color: #fff;
+    font-size: 25px !important;
+}
+
+hr {
+    color: #ffffff;
+    margin-top: 150px;
+}
+
+.hr1 {
+    color: #ffffff;
+    margin: 50px 300px;
+}
+
+/* .today {
+    background-color: #000000;
+} */

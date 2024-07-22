@@ -7,7 +7,6 @@ import Login from '../components/Login'
 export default function ResetPasswordNav() {
     return (
         <>
-            <PageHeader title="Reset Password" readOnly />
             <ResetPassword />
         </>
     )

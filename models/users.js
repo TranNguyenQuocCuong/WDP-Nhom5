@@ -43,7 +43,15 @@ const UserSchema = new mongoose.Schema({
     subscribedCourses: [{  // Thêm field subscribedCourses vào schema
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Course'
-    }]
+    }],
+    role: {
+        type: String,
+        default: 'user'
+    },
+    status: {
+        type: String,
+        default: 'active'
+    },
 });
 
 // // Băm mật khẩu trước khi lưu
