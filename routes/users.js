@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/users');
+const Order = require('../models/Order');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
@@ -105,11 +106,10 @@ router.post('/login', async (req, res) => {
 
         // So sánh mật khẩu
         // const isMatch = await bcrypt.compare(password, user.password);
-        const isMatch = await User.findOne({ password });
-        if (!isMatch) {
+        if (user.password !== password) {
             console.log('Password is incorrect');
             return res.status(400).json({ msg: 'Password is incorrect' });
-        }
+          }
         console.log("LOGIN SUCCESSFULLY");
         const token = jwt.sign({ id: user._id, username: user.username }, process.env.SECRET_KEY, { expiresIn: '1h' });
         console.log('>>> SECRET_KEY: ', process.env.SECRET_KEY);
@@ -285,6 +285,20 @@ router.put('/:id/progress', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Error updating user progress:', error);
         res.status(500).send('Server error');
+    }
+});
+
+// Fetch User Transactions by User ID
+router.get('/:userId/transactions', async (req, res) => {
+    const { userId } = req.params;
+    console.log('>>> userId transaction', userId);
+    try {
+        // Fetch orders for the specified user
+        const orders = await Order.find({ user: userId }).sort({ createdAt: -1 });
+        res.status(200).json(orders);
+    } catch (error) {
+        console.error('Error fetching transactions:', error);
+        res.status(500).json({ message: 'Error fetching transactions' });
     }
 });
 

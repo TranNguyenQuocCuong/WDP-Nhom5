@@ -49,6 +49,7 @@
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s ease;
+    margin-bottom: 10px;
 }
 
 .view-submit-course button:hover {
@@ -60,6 +61,42 @@
     margin-top: 30px;
     margin-bottom: 15px;
     font-size: 20px;
+}
+
+/* New styles for workout section */
+.workout-section {
+    background-color: #f0f4f8;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.workout-item {
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.workout-item h4 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.add-workout-btn {
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.add-workout-btn:hover {
+    background-color: #27ae60;
 }
 
 .view-submit-course table {
@@ -106,6 +143,21 @@
     font-size: 14px;
 }
 
+.edit-btn {
+    background-color: #f39c12;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.edit-btn:hover {
+    background-color: #d35400;
+}
+
 @media (max-width: 600px) {
     .view-submit-course {
         padding: 20px;
@@ -114,4 +166,57 @@
     .view-submit-course table {
         font-size: 14px;
     }
+
+    .workout-item {
+        padding: 10px;
+    }
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.checkbox-container input[type="checkbox"] {
+    width: auto;
+    margin-right: 10px;
+}
+
+.checkbox-container label {
+    font-size: 14px;
+    color: #2c3e50;
+    cursor: pointer;
+}
+
+.action-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #3498db;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.action-checkbox:checked {
+    background-color: #3498db;
+    border-color: #3498db;
+}
+
+.action-checkbox:checked::before {
+    content: '\2714';
+    font-size: 14px;
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.action-checkbox:hover {
+    border-color: #2980b9;
 }

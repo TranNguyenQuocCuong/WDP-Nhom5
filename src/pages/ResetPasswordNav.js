@@ -6,7 +6,6 @@ import ResetPassword from '../components/resetPassword';
 export default function ResetPasswordNav() {
     return (
         <>
-            <PageHeader title="Reset Password" readOnly />
             <ResetPassword />
         </>
     )

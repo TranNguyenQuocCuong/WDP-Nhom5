@@ -1,4 +1,3 @@
-// models/courses.js
 const mongoose = require('mongoose');
 
 const CourseSchema = new mongoose.Schema({
@@ -8,6 +7,18 @@ const CourseSchema = new mongoose.Schema({
     },
     description: {
         type: String,
+        required: true
+    },
+    time: {
+        type: Number,
+        required: true
+    },
+    price: {
+        type: Number,
+        required: true
+    },
+    action: {
+        type: Boolean,
         required: true
     },
     workouts: [{

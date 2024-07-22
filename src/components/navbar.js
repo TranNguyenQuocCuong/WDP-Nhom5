@@ -1,57 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faShoppingCart, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import { useCart } from '../context/CartContext';  // Import useCart hook
 import './Navbar.css';
+
 
 export default function Navbar() {
   const [isMenuOpen, setMenuOpen] = useState(false);
-  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [isWorkoutDropdownOpen, setWorkoutDropdownOpen] = useState(false);
+  const [isUserDropdownOpen, setUserDropdownOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isCoach, setIsCoach] = useState(false);
   const [profile, setProfile] = useState(null);
   const [name, setName] = useState('');
+  const [subscribedCourses, setSubscribedCourses] = useState([]);
+
+  const { getCartItemCount } = useCart();  // Get cart item count
+
+  const toggleMenu = () => {
+    setMenuOpen(!isMenuOpen);
+  };
+
+  const toggleWorkoutDropdown = () => {
+    setWorkoutDropdownOpen(!isWorkoutDropdownOpen);
+    setUserDropdownOpen(false);
+  };
+
+  const toggleUserDropdown = () => {
+    setUserDropdownOpen(!isUserDropdownOpen);
+    setWorkoutDropdownOpen(false);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       setIsLoggedIn(true);
-      fetchProfile(token);
-      checkIfCoach(token);
+    }
+
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/users/userProfile', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        setProfile(response.data);
+        setName(response.data.name);
+        setSubscribedCourses(response.data.subscribedCourses || []);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+
+    if (token) {
+      fetchProfile();
     }
   }, []);
-
-  const fetchProfile = async (token) => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/users/userProfile', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setProfile(response.data);
-      setName(response.data.name);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    }
-  };
-
-  const checkIfCoach = async (token) => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/coaches', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setIsCoach(response.data.length > 0);
-    } catch (error) {
-      console.error('Error checking if user is a coach:', error);
-    }
-  };
-
-  const toggleMenu = () => setMenuOpen(!isMenuOpen);
-  const toggleDropdown = () => setDropdownOpen(!isDropdownOpen);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
-    setIsCoach(false);
   };
 
   return (
@@ -65,56 +74,84 @@ export default function Navbar() {
             </h1>
           </Link>
 
-          <button
-            type="button"
-            onClick={toggleMenu}
-            className="navbar-toggler"
-            data-toggle="collapse"
-            data-target="#navbarCollapse"
-          >
-            <span><i className="fa-regular fa-bars"></i></span>
-          </button>
+          <div className="menu me-3">
+            <button
+              type="button"
+              onClick={toggleMenu}
+              className="navbar-toggler"
+              data-toggle="collapse"
+              data-target="#navbarCollapse"
+            >
+              <span>
+                <i className="fa-regular fa-bars"></i>
+              </span>
+            </button>
+          </div>
 
           <div className={`collapse navbar-collapse ${isMenuOpen ? 'show' : ''}`} id="navbarSupportedContent">
             <ul className="navbar-nav ms-lg-5 me-auto mb-2 mb-lg-0 text-uppercase">
+              <li className="nav-item">
+                <NavLink className="nav-link home" activeClassName="active" exact to="/">
+                  Home
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink className="nav-link" activeClassName="active" to="/about">
+                  About Us
+                </NavLink>
+              </li>
+              <li className="nav-item dropdown" onMouseEnter={toggleWorkoutDropdown} onMouseLeave={() => setWorkoutDropdownOpen(false)}>
+                <span className="nav-link dropdown-toggle" style={{ color: '#fff' }}>
+                  Workout Plan
+                </span>
+                <div className={`dropdown-menu ${isWorkoutDropdownOpen ? 'show' : ''}`} style={{ backgroundColor: '#000' }}>
+                  <NavLink className="dropdown-item" activeClassName="active" to="/course">
+                    Course
+                  </NavLink>
+                  <NavLink className="dropdown-item" activeClassName="active" to="/coach">
+                    Coach
+                  </NavLink>
+                </div>
+              </li>
+              <li className="nav-item">
+                <NavLink className="nav-link" activeClassName="active" to="/shop">
+                  Shop
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink className="nav-link" activeClassName="active" to="/contact">
+                  Contact
+                </NavLink>
+              </li>
 
-                <>
-                  {/* Non-coach navigation items */}
-                  <li className="nav-item">
-                    <NavLink className="nav-link home" activeClassName="active" exact to="/">Home</NavLink>
-                  </li>
-                  <li className="nav-item">
-                    <NavLink className="nav-link" activeClassName="active" to="/about">About Us</NavLink>
-                  </li>
-                  <li className="nav-item dropdown" onMouseEnter={toggleDropdown} onMouseLeave={toggleDropdown}>
-                    <span className="nav-link dropdown-toggle">Workout Plan</span>
-                    <div className={`dropdown-menu ${isDropdownOpen ? 'show' : ''}`}>
-                      <NavLink className="dropdown-item" activeClassName="active" to="/course">Course</NavLink>
-                      <NavLink className="dropdown-item" activeClassName="active" to="/coach">Coach</NavLink>
-                    </div>
-                  </li>
-                  <li className="nav-item">
-                    <NavLink className="nav-link" activeClassName="active" to="/features">Features</NavLink>
-                  </li>
-                  <li className="nav-item">
-                    <NavLink className="nav-link" activeClassName="active" to="/contact">Contact</NavLink>
-                  </li>
-                </>
-              
               {isLoggedIn ? (
-                <>
-                  <li className="nav-item">
+                <li className="nav-item dropdown" onMouseEnter={toggleUserDropdown} onMouseLeave={() => setUserDropdownOpen(false)} style={{ position: 'relative' }}>
+                  <span className="nav-link dropdown-toggle" style={{ color: '#fff', display: 'flex', alignItems: 'center' }}>
+                    <FontAwesomeIcon icon={faUser} /><span style={{ marginLeft: '8px' }}>{name}</span>
+                  </span>
+                  <div className={`dropdown-menu ${isUserDropdownOpen ? 'show' : ''}`} style={{ backgroundColor: '#000', padding: '10px', borderRadius: '8px' }}>
                     <NavLink className="nav-link" activeClassName="active" to="/userProfile">
-                      <FontAwesomeIcon icon={faUser} /><span style={{ marginLeft: '8px' }}>{name}</span>
+                      User Profile
                     </NavLink>
-                  </li>
-                  <li className="nav-item">
-                    <NavLink className="nav-link" activeClassName="active" to="/edit-profile">Edit Profile</NavLink>
-                  </li>
-                  <li className="nav-item">
-                    <button className="btn btn-link nav-link" onClick={handleLogout}>Logout</button>
-                  </li>
-                </>
+                    {subscribedCourses.length > 0 && (
+                      <>
+                        <NavLink className="nav-link" activeClassName="active" to="/userSchedule">
+                          User Schedule
+                        </NavLink>
+                        <NavLink className="nav-link" activeClassName="active" to="/editUserSchedule">
+                          Edit Schedule
+                        </NavLink>
+                      </>
+                    )}
+                    <NavLink className="nav-link" activeClassName="active" to="/user/transactions">
+                      User Transaction
+                    </NavLink>
+                    <button className="btn btn-link nav-link" onClick={handleLogout} style={{ color: '#fff', backgroundColor: 'transparent', display: 'flex', alignItems: 'center' }}>
+                      <FontAwesomeIcon icon={faSignOutAlt} style={{ marginRight: '8px' }} />
+                      Logout
+                    </button>
+                  </div>
+                </li>
               ) : (
                 <li className="nav-item">
                   <NavLink className="nav-link" activeClassName="active" to="/login">
@@ -122,6 +159,13 @@ export default function Navbar() {
                   </NavLink>
                 </li>
               )}
+
+              <li className="nav-item">
+                <NavLink className="nav-link" activeClassName="active" to="/cart">
+                  <FontAwesomeIcon icon={faShoppingCart} />
+                  <span className="badge bg-primary">{getCartItemCount()}</span> {/* Display cart item count */}
+                </NavLink>
+              </li>
             </ul>
           </div>
         </div>

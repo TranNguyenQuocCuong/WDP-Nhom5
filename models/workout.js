@@ -5,6 +5,10 @@ const WorkoutSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    video: {
+        type: String,
+        required: true
+    },
     description: {
         type: String,
         required: true

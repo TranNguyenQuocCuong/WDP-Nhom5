@@ -6,7 +6,6 @@ import Signup from '../components/signup';
 export default function SignupNav() {
     return (
         <>
-            <PageHeader title="Signup" readOnly />
             <Signup />
         </>
     )

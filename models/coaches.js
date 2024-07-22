@@ -27,6 +27,9 @@ const CoachSchema = new mongoose.Schema({
     age: {
         type: Number
     },
+    experience: {
+        type: String
+    },
     advisedUsers: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'

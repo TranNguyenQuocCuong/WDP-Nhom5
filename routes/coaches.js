@@ -24,13 +24,10 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ msg: 'Username is incorrect' });
         }
 
-        // So sánh mật khẩu
-        // const isMatch = await bcrypt.compare(password, user.password);
-        const isMatch = await Coach.findOne({ password });
-        if (!isMatch) {
+        if (coach.password !== password) {
             console.log('Password is incorrect');
             return res.status(400).json({ msg: 'Password is incorrect' });
-        }
+          }
         console.log("LOGIN SUCCESSFULLY");
         const token = jwt.sign({ id: coach._id, username: coach.username }, process.env.SECRET_KEY, { expiresIn: '1h' });
         console.log('>>> SECRET_KEY: ', process.env.SECRET_KEY);

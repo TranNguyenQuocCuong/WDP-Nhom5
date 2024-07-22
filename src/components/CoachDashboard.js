@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch, NavLink } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, NavLink, useHistory } from 'react-router-dom';
 import ViewAndSubmitCourse from './ViewAndSubmitCourse';
 import TakeAttendance from './TakeAttendance';
 import TrackUserProgress from './TrackUserProgress';
@@ -8,6 +8,13 @@ import EditProfile from './EditProfile';
 import './CoachDashboard.css';
 
 export default function CoachDashboard() {
+    const history = useHistory();
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        window.location.href = '/';
+    };
+
     return (
         <Router>
             <div className="coach-dashboard">
@@ -42,6 +49,9 @@ export default function CoachDashboard() {
                             </NavLink>
                         </li>
                     </ul>
+                    <button className="logout-button" onClick={handleLogout}>
+                        <i className="fas fa-sign-out-alt"></i> Logout
+                    </button>
                 </nav>
                 <main className="content">
                     <Switch>
@@ -50,6 +60,10 @@ export default function CoachDashboard() {
                         <Route path="/track-progress" component={TrackUserProgress} />
                         <Route path="/give-advice" component={GiveAdvice} />
                         <Route path="/edit-profile" component={EditProfile} />
+                        {/* Add a default route or redirect if needed */}
+                        <Route path="/" exact>
+                            <h2>Welcome to the Coach Dashboard</h2>
+                        </Route>
                     </Switch>
                 </main>
             </div>

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { HashRouter as Router, Switch, Redirect, Route, Routes } from "react-router-dom";
+import React from "react";
+import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import './components/Navbar.css'
 import './components/Banner.css'
 import './components/GymClass.css'
@@ -32,53 +32,39 @@ import ResetPassword from "./pages/ResetPasswordNav";
 import Signup from "./pages/Signup";
 import Checkout from "./pages/CheckoutNav";
 import UserProfile from "./pages/UserProfile";
-import Footer from './components/Footer';
-import ViewAndSubmitCourse from "./components/ViewAndSubmitCourse";
 import ViewAndSubmitCourseNav from "./pages/ViewAndSubmitCourseNav";
 import GiveAdviceNav from "./pages/GiveAdviceNav";
 import EditProfileNav from "./pages/EditProfileNav";
 import TakeAttendanceNav from "./pages/TakeAttendanceNav";
 import CoachDashboardNav from "./pages/CoachDashBoardNav";
 import CoachLoginNav from "./pages/CoachLoginNav";
+import EditUserSchedule from "./pages/EditUserScheduleNav";
+import UserSchedule from "./pages/UserScheduleNav";
+import BillingForm from "./pages/BillingFormNav";
 
-// import Topbar from "./admin-pages/Topbar";
-// import Sidebar from "./admin-pages/Sidebar";
-// import Dashboard from "./admin-pages/dashboard";
-// import Team from "./admin-pages/team";
-// import Invoices from "./admin-pages/invoices";
-// import Contacts from "./admin-pages/contacts";
-// import Bar from "./admin-pages/bar";
-// import Form from "./admin-pages/form";
-// import Line from "./admin-pages/line";
-// import Pie from "./admin-pages/pie";
-// import FAQ from "./admin-pages/faq";
-// import { CssBaseline, ThemeProvider } from "@mui/material";
-// import { ColorModeContext, useMode } from "./theme";
-// import Calendar from "./admin-pages/calendar";
+
+import HomeAdmin from "./admin-pages/HomeAdminNav";
+
+import MainLayout from './components/MainLayout';
+import AdminLayout from './components/AdminLayout';
+import UserDetailNav from './admin-pages/UserDetailNav'
+import CoachAdminNav from './admin-pages/CoachAdminNav'
+import RevenueAdminNav from './admin-pages/RevenueAdminNav'
+import ClassAdminNav from './admin-pages/ClassAdminNav'
+import CourseAdminNav from './admin-pages/CourseAdminNav'
+
+//shop
+import ProductListScreen from './pages/ProductListNav';
+import CartScreen from './pages/CartScreenNav';
+import PaymentMethodScreen from './components/PaymentMethodScreen';
+import ProductAdminScreen from './admin-components/ProductAdminScreen';
+import UserTransactions from './pages/UserTransactionNav';
 
 function App() {
-  // const [theme, colorMode] = useMode();
-  // const [isSidebar, setIsSidebar] = useState(true);
-
   return (
     <Router>
-      <Navbar />
-
       <Switch>
-
-        <Route exact path="/" component={HomeNav}></Route>
-        <Route exact path="/home" component={HomeNav}></Route>
-        {/* <Redirect exact from="/Gym-Website/" to="/home" /> */}
-        <Route exact path="/about" component={AboutNav}></Route>
-        <Route exact path="/course" component={CourseNav}></Route>
-        <Route exact path="/coach" component={CoachNav}></Route>
-        <Route exact path="/features" component={FeaturesNav}></Route>
-        <Route exact path="/contact" component={ContactNav}></Route>
         <Route exact path="/login" component={Login}></Route>
-        <Route exact path="/forgotpassword" component={ForgotPasswordNav}></Route>
-        <Route path="/resetpassword/:id/:token" component={ResetPassword}></Route>
-        <Route exact path="/resetpassword" component={ResetPassword}></Route>
-        <Route exact path="/courseDetail" component={courseDetailNav}></Route>
         <Route exact path="/signup" component={Signup}></Route>
         <Route exact path="/checkout" component={Checkout}></Route>
         <Route exact path="/userProfile" component={UserProfile}></Route>
@@ -88,7 +74,7 @@ function App() {
         <Route exact path="/takeAttendance" component={TakeAttendanceNav} />
         <Route exact path="/coachDashboard" component={CoachDashboardNav} />
         <Route exact path="/coachLogin" component={CoachLoginNav} />
-        //
+        
         {/* <Route path="/" element={<Dashboard />} />
         <Route path="/team" element={<Team />} />
         <Route path="/contacts" element={<Contacts />} />
@@ -99,12 +85,45 @@ function App() {
         <Route path="/line" element={<Line />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/calendar" element={<Calendar />} /> */}
+        <Route exact path="/forgotpassword" component={ForgotPasswordNav}></Route>
+        <Route exact path="/resetpassword/:id/:token" component={ResetPassword}></Route>
+        {/* <Route exact path="/resetpassword" component={ResetPassword}></Route> */}
+
+        <Route exact path="/admin" component={HomeAdmin} />
+        <Route exact path="/admin/user/:userId" component={UserDetailNav} />
+        <Route exact path="/admin/coaches" component={CoachAdminNav} />
+        <Route exact path="/admin/revenues" component={RevenueAdminNav} />
+        <Route exact path="/admin/classes" component={ClassAdminNav} />
+        <Route exact path="/admin/courses" component={CourseAdminNav} />
+        <Route path="/admin/products" component={ProductAdminScreen} />
+
+        <Route>
+          <MainLayout>
+            <Switch>
+              <Route exact path="/" component={HomeNav} />
+              <Route exact path="/home" component={HomeNav} />
+              <Route exact path="/about" component={AboutNav} />
+              <Route exact path="/course" component={CourseNav} />
+              <Route exact path="/coach" component={CoachNav} />
+              <Route exact path="/features" component={FeaturesNav} />
+              <Route exact path="/contact" component={ContactNav} />
+              <Route exact path="/courseDetail" component={courseDetailNav} />
+              <Route exact path="/checkout" component={Checkout} />
+              <Route exact path="/userProfile" component={UserProfile} />
+              <Route exact path="/editUserSchedule" component={EditUserSchedule} />
+              <Route exact path="/userSchedule" component={UserSchedule} />
+              <Route exact path="/billing" component={BillingForm} />
+
+              
+              <Route path="/shop" component={ProductListScreen} exact />
+              <Route path="/cart" component={CartScreen} />
+              <Route path="/user/transactions" component={UserTransactions} />
+              <Route path="/payment" component={PaymentMethodScreen} />
+            </Switch>
+          </MainLayout>
+        </Route>
       </Switch>
-
-      <Footer />
-    </Router>
-
-
+    </Router >
   );
 }
 

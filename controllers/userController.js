@@ -53,8 +53,7 @@ const login = async (req, res) => {
 
     // So sánh mật khẩu
     // const isMatch = await bcrypt.compare(password, user.password);
-    const isMatch = await User.findOne({ password });
-    if (!isMatch) {
+    if (user.password !== password) {
       console.log('Password is incorrect');
       return res.status(400).json({ msg: 'Password is incorrect' });
     }

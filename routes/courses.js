@@ -163,7 +163,8 @@ router.post('/', async (req, res) => {
             email,
             name,
             address,
-            age
+            age,
+            experience
         });
 
         const coach = await newCoach.save();
@@ -173,6 +174,41 @@ router.post('/', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
+router.put('/:courseId', async (req, res) => {
+    try {
+        const updatedCourse = await Course.findByIdAndUpdate(
+            req.params.courseId,
+            req.body,
+            { new: true }
+        );
+        if (!updatedCourse) {
+            return res.status(404).json({ message: 'Course not found' });
+        }
+        res.json(updatedCourse);
+    } catch (error) {
+        console.error('Error updating course:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+router.post('/:courseId/workouts', async (req, res) => {
+    try {
+        const course = await Course.findById(req.params.courseId);
+        if (!course) {
+            return res.status(404).json({ message: 'Course not found' });
+        }
+        const { workoutId } = req.body;
+        course.workouts.push(workoutId);
+        await course.save();
+        res.json(course);
+    } catch (error) {
+        console.error('Error adding workout to course:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+
 
 
 module.exports = router;

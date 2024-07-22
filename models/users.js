@@ -45,7 +45,15 @@ const UserSchema = new mongoose.Schema({
         ref: 'Course'
     }],
     
-    timetable: [{type: String}]
+    timetable: [{type: String}],
+    role: {
+        type: String,
+        default: 'user'
+    },
+    status: {
+        type: String,
+        default: 'active'
+    },
 });
 
 // // Băm mật khẩu trước khi lưu
