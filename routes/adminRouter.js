@@ -1,11 +1,110 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const nodemailer = require('nodemailer');
 const Users = require("../models/users");
+const Transaction = require('../models/Order');
+const Coaches = require("../models/coaches");
+const Course = require('../models/courses');
+const Admin = require("../models/admin");
 const adminRouter = express.Router();
 adminRouter.use(bodyParser.json());
 
-const Coaches = require("../models/coaches");
-const Course = require('../models/courses');
+
+const JWT_SECRET = '5a3d9f8d2b8a4c7a1e6f9d4c3b2a7e8d';
+
+// Nodemailer setup
+const transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: 'phandinhdan6666@gmail.com',
+    pass: 'nxum kgxi agdf rnvi'
+  }
+});
+
+// Add login route
+adminRouter.route('/adminLogin')
+  .post((req, res) => {
+    const { username, password } = req.body;
+    console.log('>>> ', username, password);
+
+    Admin.findOne({ username })
+      .then(admin => {
+        if (!admin) {
+          return res.status(401).json({ message: 'Authentication failed. Admin not found.' });
+        }
+
+        if (password !== admin.password) {
+          return res.status(401).json({ message: 'Authentication failed. Incorrect password.' });
+        }
+
+        const token = jwt.sign({ id: admin._id }, JWT_SECRET, { expiresIn: '1h' });
+        res.status(200).json({ message: 'Login successful!', token });
+      })
+      .catch(err => res.status(500).json({ message: 'Server error', err }));
+  });
+
+
+// Forgot password route
+adminRouter.route('/adminforgot')
+  .post((req, res) => {
+    Admin.findOne() // Assuming only one admin exists
+      .then(admin => {
+        if (!admin) {
+          return res.status(404).json({ message: 'Admin not found' });
+        }
+
+        console.log('>>> adm: ', admin, admin.email);
+
+        // Send email with admin's username and password
+        const mailOptions = {
+          from: 'phandinhdan6666@gmail.com',
+          to: admin.email,
+          subject: 'Password Reset Request',
+          text: `Hello ${admin.username},\n\nYour current username is: ${admin.password}\nPassword is: ${admin.password}\n\nPlease change it as soon as possible.\n\nBest regards,\nFitZone Team`
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            return res.status(500).json({ message: 'Failed to send email', error });
+          }
+          console.log('Password reset email sent');
+          res.status(200).json({ message: 'Password reset email sent' });
+        });
+      })
+      .catch(err => res.status(500).json({ message: 'Server error', err }));
+  });
+
+adminRouter.route('/adminProfile')
+  .get((req, res, next) => {
+    Admin.findOne({})
+      .then((admin) => {
+        if (admin) {
+          res.status(200).json(admin);
+        } else {
+          const err = new Error('Admin profile not found');
+          err.status = 404;
+          return next(err);
+        }
+      })
+      .catch((err) => next(err));
+  })
+  .put((req, res, next) => {
+    Admin.findOneAndUpdate({}, { $set: req.body }, { new: true })
+      .then((admin) => {
+        if (admin) {
+          res.status(200).json(admin);
+        } else {
+          const err = new Error('Admin profile not found');
+          err.status = 404;
+          return next(err);
+        }
+      })
+      .catch((err) => next(err));
+  });
+
+
 
 adminRouter.route('/user')
   .get((req, res, next) => {
@@ -279,5 +378,39 @@ adminRouter.route("/course/:courseId")
   });
 
 
+
+// Get all transactions with optional pagination
+adminRouter.get('/transactions', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const transactions = await Transaction.find()
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+    const totalTransactions = await Transaction.countDocuments();
+    res.json({
+      transactions,
+      totalPages: Math.ceil(totalTransactions / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+});
+
+// Get transaction by ID
+adminRouter.get('/transactions/:id', async (req, res) => {
+  try {
+    const transaction = await Transaction.findById(req.params.id);
+    if (transaction) {
+      res.json(transaction);
+    } else {
+      res.status(404).json({ message: 'Transaction not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+});
 
 module.exports = adminRouter;
