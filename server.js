@@ -71,7 +71,8 @@ const paymentRoutes = require('./routes/payment');
 const attendanceRoutes = require('./routes/attendance');
 const workoutRoutes = require('./routes/workouts');
 const revenueRoutes = require('./routes/revenueController')
-
+const blogRouter = require('./routes/blogRouter')
+  
 // Shop Routes
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
@@ -88,6 +89,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/workouts', workoutRoutes);
 app.use('/api/revenue', revenueRoutes);
+app.use('/api/blogs', blogRouter);
 
 app.use('/api/products', productRoutes);
 app.use('/api/order', orderRoutes);

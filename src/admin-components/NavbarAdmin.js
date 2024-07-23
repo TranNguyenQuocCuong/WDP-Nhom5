@@ -39,6 +39,9 @@ const NavbarAdmin = () => {
                     <ListItem button component={Link} to="/admin/coaches">
                         <ListItemText primary="Coach" />
                     </ListItem>
+                    <ListItem button component={Link} to="/admin/blogs">
+                        <ListItemText primary="Blog" />
+                    </ListItem>
                     <ListItem button component={Link} to="/admin/revenues">
                         <ListItemText primary="Revenue" />
                     </ListItem>

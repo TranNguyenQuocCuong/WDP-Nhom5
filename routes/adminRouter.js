@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const Users = require("../models/users");
 const adminRouter = express.Router();
 adminRouter.use(bodyParser.json());
+const Blogs = require("../models/blog");
 
 const Coaches = require("../models/coaches");
 const Course = require('../models/courses');
@@ -275,6 +276,86 @@ adminRouter.route("/course/:courseId")
           return next(err);
         }
       })
+      .catch((err) => next(err));
+  });
+
+
+//Blog
+
+adminRouter.route("/blog")
+  .get((req, res, next) => {
+    Blogs.find({})
+      .then((blogs) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "text/html");
+        res.json(blogs);
+      }, (err) => next(err))
+      .catch((err) => next(err));
+  })
+
+  .post((req, res, next) => {
+    Blogs.create(req.body)
+      .then((blog) => {
+        console.log('Blog Created', blog);
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "text/html");
+        res.json(blog);
+      }, (err) => next(err))
+      .catch((err) => next(err));
+  })
+
+  .put((req, res, next) => {
+    res.statusCode = 403;
+    res.end("PUT operation not supported on /blogs");
+  });
+
+//   .delete((req, res, next) => {
+//     Blogs.remove({})
+//       .then((resp) => {
+//         res.statusCode = 200;
+//         res.setHeader("Content-Type", "text/html");
+//         res.json(resp);
+//       }, (err) => next(err))
+//       .catch((err) => next(err));
+//   });
+
+
+
+adminRouter.route("/blog/:blogId")
+  .get((req, res, next) => {
+    Blogs.findById(req.params.blogId)
+      .then((blog) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "text/html");
+        res.json(blog);
+      }, (err) => next(err))
+      .catch((err) => next(err));
+  })
+
+  .post((req, res, next) => {
+    res.statusCode = 403;
+    res.end("PUT operation not supported on /blogs" + req.params.blogId);
+  })
+
+  .put((req, res, next) => {
+    Blogs.findByIdAndUpdate(req.params.blogId, {
+      $set: req.body
+    }, { new: true })
+      .then((blog) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "text/html");
+        res.json(blog);
+      }, (err) => next(err))
+      .catch((err) => next(err));
+  })
+
+  .delete((req, res, next) => {
+    Blogs.findOneAndDelete(req.params.blogId)
+      .then((resp) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "text/html");
+        res.json(resp);
+      }, (err) => next(err))
       .catch((err) => next(err));
   });
 
