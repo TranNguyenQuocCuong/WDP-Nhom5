@@ -1,14 +1,31 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './Login.css';
 import { Link } from 'react-router-dom/cjs/react-router-dom.min'
 import axios from 'axios';
+import { GoogleLogin } from 'react-google-login';
+import { gapi } from "gapi-script";
 import FacebookLoginButton from './facebookLogin';
-import GoogleLoginButton from './googleLogin';
 
 export default function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+
+    const clientId = '345177848260-gt4s9487god6jt45848agv4ugru143v3.apps.googleusercontent.com';
+
+    useEffect(() => {
+        gapi.load("auth2", () => {
+            gapi.auth2.init({ clientId: clientId })
+        })
+    }, []);
+
+    const onSuccess = (response) => {
+        console.log('[Login Success] currentUser: ', response.profileObj);
+    };
+
+    const onFailure = (response) => {
+        console.log('[Login Failed] response: ', response);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -32,15 +49,20 @@ export default function Login() {
                     <div className="login_wrapper">
                         <div className="row">
                             <div className="col-lg-6 col-md-6 col-xs-12 col-sm-6">
-                                <FacebookLoginButton
-                                    className="btn btn-primary d-flex justify-content-between facebook"
-                                    iconClassName="fa fa-facebook"
-                                />
+                                    <FacebookLoginButton
+                                        className="btn btn-primary d-flex justify-content-between facebook"
+                                        iconClassName="fa fa-facebook"
+                                    />
                             </div>
+
                             <div className="col-lg-6 col-md-6 col-xs-12 col-sm-6">
-                                <GoogleLoginButton
-                                    className="btn btn-primary google-plus"
-                                    iconClassName="fa fa-google-plus"
+                                <GoogleLogin clientId={clientId}
+                                    buttonText={"Login with Google"}
+                                    onSuccess={onSuccess}
+                                    onFailure={onFailure} npm i
+                                    cookiePolicy={'single_host_origin'}
+                                    className={'btn btn-primary google-plus'}
+                                    isSignedIn={true}
                                 />
                             </div>
                         </div>
@@ -85,14 +107,6 @@ export default function Login() {
                                 <button type="submit" className="btn btn-primary btn-block login_btn">
                                     Log In
                                 </button>
-                            </div>
-                            <div className="login_message">
-                                <p>
-                                    Are you a trainer?{' '}
-                                    <Link to="/coachLogin" className="link-primary">
-                                        Login as trainer
-                                    </Link>{' '}
-                                </p>
                             </div>
                             <div className="login_message">
                                 <p>
