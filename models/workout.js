@@ -13,11 +13,6 @@ const WorkoutSchema = new Schema({
     description: {
         type: String,
         required: true
-    },
-    courseId: {
-        type: Schema.Types.ObjectId,
-        ref: 'Course',
-        required: true
     }
 });
 

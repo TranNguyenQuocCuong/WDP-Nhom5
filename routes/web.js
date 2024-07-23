@@ -5,6 +5,7 @@ const userController = require('../controllers/userController');
 const { authenticateToken } = require('../middlewares/authen');
 const { userprofile, getHomePage, register, login, logout, getUserProfile, editProfile, changePassword, forgotPassword } = require('../controllers/userController');
 const jwt = require('jsonwebtoken');
+const Progress = require('../models/progress');
 
 const User = require('../models/users');
 

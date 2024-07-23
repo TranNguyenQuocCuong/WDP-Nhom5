@@ -110,6 +110,14 @@ export default function Login() {
                             </div>
                             <div className="login_message">
                                 <p>
+                                    Are you a trainer?{' '}
+                                    <Link to="/coachLogin" className="link-primary">
+                                        Login as trainer
+                                    </Link>{' '}
+                                </p>
+                            </div>
+                            <div className="login_message">
+                                <p>
                                     Don’t have an account?{' '}
                                     <Link to="/signup" className="link-primary">
                                         Create an account

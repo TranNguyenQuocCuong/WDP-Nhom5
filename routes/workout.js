@@ -6,20 +6,20 @@ const Course = require('../models/courses'); // Adjust the path as necessary
 
 // Create a new workout
 router.post('/', async (req, res) => {
+    const { name, description, video } = req.body;
+
     try {
-        const { name, video, description, courseId } = req.body;
+        const newWorkout = new Workout({
+            name,
+            description,
+            video
+        });
 
-        // Check if the provided courseId exists
-        const course = await Course.findById(courseId);
-        if (!course) {
-            return res.status(404).json({ message: 'Course not found' });
-        }
-
-        const workout = new Workout({ name, video, description, courseId });
-        await workout.save();
+        const workout = await newWorkout.save();
         res.status(201).json(workout);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
     }
 });
 
@@ -49,29 +49,18 @@ router.get('/:id', async (req, res) => {
 // Update a workout by ID
 router.put('/:id', async (req, res) => {
     try {
-        const { name, video, description, courseId } = req.body;
-
-        // Check if the provided courseId exists
-        if (courseId) {
-            const course = await Course.findById(courseId);
-            if (!course) {
-                return res.status(404).json({ message: 'Course not found' });
-            }
-        }
-
-        const workout = await Workout.findByIdAndUpdate(
+        const updatedWorkout = await Workout.findByIdAndUpdate(
             req.params.id,
-            { name, video, description, courseId },
+            req.body,
             { new: true }
         );
-
-        if (!workout) {
+        if (!updatedWorkout) {
             return res.status(404).json({ message: 'Workout not found' });
         }
-
-        res.status(200).json(workout);
+        res.json(updatedWorkout);
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error('Error updating workout:', error);
+        res.status(500).send('Server error');
     }
 });
 
