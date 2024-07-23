@@ -1,0 +1,83 @@
+/* body {
+    background: url('/path/to/your/image.jpg') no-repeat center center fixed;
+    background-size: cover;
+} */
+
+
+.login-admin {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.login-header {
+    font-size: 1.5rem;
+    /* Adjust as needed */
+}
+
+.fit-text {
+    color: #a1a1a1;
+}
+
+.zone-text {
+    color: #007bff;
+    /* Blue color for FitZone */
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-form {
+    position: relative;
+}
+
+.login-form .form-group {
+    margin-bottom: 15px;
+}
+
+.login-form .form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.login-form .form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.login-form .btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4691e2;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.login-form .btn:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
+.login-form .error {
+    color: red;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.forgot-password-text {
+    color: #007bff;
+    /* Adjust color as needed */
+    cursor: pointer;
+    font-size: 0.9rem;
+    /* Adjust font size as needed */
+    text-align: right;
+    margin-top: 10px;
+}

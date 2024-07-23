@@ -5,28 +5,40 @@ import {
     Dialog, DialogTitle, DialogContent, TextField, Button, DialogActions,
     IconButton, TablePagination, InputAdornment
 } from '@mui/material';
-import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Visibility as VisibilityIcon, Search as SearchIcon } from '@mui/icons-material';
+import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Search as SearchIcon } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
 
-function CourseAdmin() {
-    const [courses, setCourses] = useState([]);
-    const [selectedCourse, setSelectedCourse] = useState(null);
+function WorkoutAdmin() {
+    const [workouts, setWorkouts] = useState([]);
+    const [selectedWorkout, setSelectedWorkout] = useState(null);
     const [open, setOpen] = useState(false);
     const [isAdding, setIsAdding] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
+        video: '',
         description: '',
-        time: '',
-        price: '',
-        action: false
+        courseId: ''
     });
-    const [searchTerm, setSearchTerm] = useState('');
+    const [courses, setCourses] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const history = useHistory();
 
     useEffect(() => {
+        axios.get('http://localhost:5000/api/workouts')
+            .then(response => {
+                const normalizedWorkouts = response.data.map(workout => ({
+                    ...workout,
+                    courseId: typeof workout.courseId === 'object' ? workout.courseId : { _id: workout.courseId, name: '' }
+                }));
+                setWorkouts(normalizedWorkouts);
+            })
+            .catch(error => {
+                console.error("There was an error fetching the workouts!", error);
+            });
+
         axios.get('http://localhost:5000/api/admins/course')
             .then(response => {
                 setCourses(response.data);
@@ -36,85 +48,88 @@ function CourseAdmin() {
             });
     }, []);
 
-    const filteredCourses = courses.filter(course =>
-        course.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredWorkouts = workouts.filter(workout =>
+        workout.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const handleRowClick = (course) => {
-        setSelectedCourse(course);
+    const handleRowClick = (workout) => {
+        setSelectedWorkout(workout);
         setOpen(true);
         setIsAdding(false);
         setFormData({
-            name: course.name || '',
-            description: course.description || '',
-            time: course.time || '',
-            price: course.price || '',
-            action: course.action || false
+            name: workout.name || '',
+            video: workout.video || '',
+            description: workout.description || '',
+            courseId: workout.courseId._id || ''
         });
     };
 
     const handleClose = () => {
         setOpen(false);
-        setSelectedCourse(null);
+        setSelectedWorkout(null);
         setIsAdding(false);
         setFormData({
             name: '',
+            video: '',
             description: '',
-            time: '',
-            price: '',
-            action: false
+            courseId: ''
         });
     };
 
     const handleInputChange = (e) => {
-        const { name, type, value, checked } = e.target;
+        const { name, value } = e.target;
         setFormData(prevData => ({
             ...prevData,
-            [name]: type === 'checkbox' ? checked : value
+            [name]: value
         }));
     };
 
-    const handleAddCourse = () => {
+    const handleAddWorkout = () => {
         setIsAdding(true);
         setOpen(true);
         setFormData({
             name: '',
+            video: '',
             description: '',
-            time: '',
-            price: '',
-            action: false
+            courseId: ''
         });
     };
 
     const handleSave = () => {
         if (isAdding) {
-            axios.post('http://localhost:5000/api/admins/course', formData)
+            axios.post('http://localhost:5000/api/workouts', formData)
                 .then(response => {
-                    setCourses([...courses, response.data]);
+                    const newWorkout = response.data;
+                    const course = courses.find(course => course._id === newWorkout.courseId);
+                    newWorkout.courseId = { _id: newWorkout.courseId, name: course ? course.name : '' };
+                    setWorkouts([...workouts, newWorkout]);
                     handleClose();
                 })
                 .catch(error => {
-                    console.error("There was an error adding the course!", error);
+                    console.error("There was an error adding the workout!", error);
                 });
         } else {
-            axios.put(`http://localhost:5000/api/admins/course/${selectedCourse._id}`, formData)
+            axios.put(`http://localhost:5000/api/workouts/${selectedWorkout._id}`, formData)
                 .then(response => {
-                    setCourses(prevCourses => prevCourses.map(course => course._id === response.data._id ? response.data : course));
+                    const updatedWorkout = response.data;
+                    const course = courses.find(course => course._id === updatedWorkout.courseId);
+                    updatedWorkout.courseId = { _id: updatedWorkout.courseId, name: course ? course.name : '' };
+                    setWorkouts(prevWorkouts => prevWorkouts.map(workout => workout._id === updatedWorkout._id ? updatedWorkout : workout));
                     handleClose();
                 })
                 .catch(error => {
-                    console.error("There was an error updating the course!", error);
+                    console.error("There was an error updating the workout!", error);
                 });
         }
     };
 
-    const handleDelete = (courseId) => {
-        axios.delete(`http://localhost:5000/api/admins/course/${courseId}`)
+    const handleDelete = (workoutId) => {
+        axios.delete(`http://localhost:5000/api/workouts/${workoutId}`)
             .then(() => {
-                setCourses(prevCourses => prevCourses.filter(course => course._id !== courseId));
+                setWorkouts(prevWorkouts => prevWorkouts.filter(workout => workout._id !== workoutId));
             })
             .catch(error => {
-                console.error("There was an error deleting the course!", error);
+                console.error("There was an error deleting the workout!", error);
             });
     };
 
@@ -127,13 +142,21 @@ function CourseAdmin() {
         setPage(0);
     };
 
-    const handleViewCourse = (courseId) => {
-        history.push(`/courses/${courseId}`);
+    const handleViewWorkout = (workoutId) => {
+        history.push(`/workouts/${workoutId}`);
     };
 
     return (
         <div style={{ marginLeft: '250px', padding: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<AddIcon />}
+                    onClick={handleAddWorkout}
+                >
+                    Add Workout
+                </Button>
                 <TextField
                     label="Search"
                     variant="outlined"
@@ -155,30 +178,29 @@ function CourseAdmin() {
                         <TableRow>
                             <TableCell>No.</TableCell>
                             <TableCell>Name</TableCell>
+                            <TableCell>Video</TableCell>
                             <TableCell>Description</TableCell>
-                            <TableCell>Time</TableCell>
-                            <TableCell>Price</TableCell>
-                            <TableCell>Action</TableCell>
+                            <TableCell>Course</TableCell>
                             <TableCell>Actions</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filteredCourses.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((course, index) => (
-                            <TableRow key={course._id}>
+                        {filteredWorkouts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((workout, index) => (
+                            <TableRow key={workout._id}>
                                 <TableCell>{index + 1}</TableCell>
-                                <TableCell>{course.name}</TableCell>
-                                <TableCell>{course.description}</TableCell>
-                                <TableCell>{course.time}</TableCell>
-                                <TableCell>{course.price}</TableCell>
-                                <TableCell>{course.action ? 'Active' : 'Inactive'}</TableCell>
+                                <TableCell>{workout.name}</TableCell>
                                 <TableCell>
-                                    <IconButton color="primary" onClick={() => handleRowClick(course)}>
+                                    <a href={`https://www.youtube.com/watch?v=${workout.video}`} target="_blank" rel="noopener noreferrer">
+                                        View Video
+                                    </a>
+                                </TableCell>
+                                <TableCell>{workout.description}</TableCell>
+                                <TableCell>{workout.courseId.name || 'N/A'}</TableCell>
+                                <TableCell>
+                                    <IconButton color="primary" onClick={() => handleRowClick(workout)}>
                                         <EditIcon />
                                     </IconButton>
-                                    {/* <IconButton color="info" onClick={() => handleViewCourse(course._id)}>
-                                        <VisibilityIcon />
-                                    </IconButton> */}
-                                    <IconButton color="error" onClick={() => handleDelete(course._id)}>
+                                    <IconButton color="error" onClick={() => handleDelete(workout._id)}>
                                         <DeleteIcon />
                                     </IconButton>
                                 </TableCell>
@@ -189,7 +211,7 @@ function CourseAdmin() {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component="div"
-                    count={filteredCourses.length}
+                    count={filteredWorkouts.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}
@@ -197,18 +219,8 @@ function CourseAdmin() {
                 />
             </TableContainer>
 
-            <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                style={{ marginTop: 16 }}
-                onClick={handleAddCourse}
-            >
-                Add Course
-            </Button>
-
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>{isAdding ? 'Add Course' : 'Edit Course'}</DialogTitle>
+                <DialogTitle>{isAdding ? 'Add Workout' : 'Edit Workout'}</DialogTitle>
                 <DialogContent>
                     <TextField
                         margin="dense"
@@ -218,6 +230,16 @@ function CourseAdmin() {
                         fullWidth
                         variant="outlined"
                         value={formData.name}
+                        onChange={handleInputChange}
+                    />
+                    <TextField
+                        margin="dense"
+                        name="video"
+                        label="Video URL"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                        value={formData.video}
                         onChange={handleInputChange}
                     />
                     <TextField
@@ -232,36 +254,24 @@ function CourseAdmin() {
                     />
                     <TextField
                         margin="dense"
-                        name="time"
-                        label="Time (month)"
-                        type="number"
+                        name="courseId"
+                        label="Course"
+                        select
                         fullWidth
                         variant="outlined"
-                        value={formData.time}
+                        SelectProps={{
+                            native: true,
+                        }}
+                        value={formData.courseId}
                         onChange={handleInputChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="price"
-                        label="Price"
-                        type="number"
-                        fullWidth
-                        variant="outlined"
-                        value={formData.price}
-                        onChange={handleInputChange}
-                    />
-                    <div style={{ display: 'flex', alignItems: 'center', marginTop: 16 }}>
-                        <TextField
-                            margin="dense"
-                            name="action"
-                            label="Is In Sale"
-                            type="checkbox"
-                            checked={formData.action}
-                            onChange={handleInputChange}
-                            style={{ marginRight: 8 }}
-                        />
-                        <span>{formData.action ? 'Active' : 'Inactive'}</span>
-                    </div>
+                    >
+                        <option value="" disabled>Select Course</option>
+                        {courses.map(course => (
+                            <option key={course._id} value={course._id}>
+                                {course.name}
+                            </option>
+                        ))}
+                    </TextField>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color="primary">
@@ -276,4 +286,4 @@ function CourseAdmin() {
     );
 }
 
-export default CourseAdmin;
+export default WorkoutAdmin;

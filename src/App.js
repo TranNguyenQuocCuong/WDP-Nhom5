@@ -43,22 +43,26 @@ import UserSchedule from "./pages/UserScheduleNav";
 import BillingForm from "./pages/BillingFormNav";
 
 
+import LoginAdmin from "./admin-pages/LoginAdminNav";
 import HomeAdmin from "./admin-pages/HomeAdminNav";
 
 import MainLayout from './components/MainLayout';
 import AdminLayout from './components/AdminLayout';
 import UserDetailNav from './admin-pages/UserDetailNav'
+import ProfileAdminNav from './admin-pages/ProfileAdminNav'
 import CoachAdminNav from './admin-pages/CoachAdminNav'
 import RevenueAdminNav from './admin-pages/RevenueAdminNav'
 import ClassAdminNav from './admin-pages/ClassAdminNav'
 import CourseAdminNav from './admin-pages/CourseAdminNav'
+import WorkoutAdminNav from './admin-pages/WorkoutAdminNav'
+import ProductAdminNav from './admin-pages/ProductAdminNav';
+import TransactionsAdminNav from './admin-pages/TransactionsAdminNav';
 import BlogAdminNav from './admin-pages/BlogAdminNav'
 
 //shop
 import ProductListScreen from './pages/ProductListNav';
 import CartScreen from './pages/CartScreenNav';
 import PaymentMethodScreen from './components/PaymentMethodScreen';
-import ProductAdminScreen from './admin-components/ProductAdminScreen';
 import UserTransactions from './pages/UserTransactionNav';
 
 function App() {
@@ -90,14 +94,22 @@ function App() {
         <Route exact path="/resetpassword/:id/:token" component={ResetPassword}></Route>
         {/* <Route exact path="/resetpassword" component={ResetPassword}></Route> */}
 
-        <Route exact path="/admin" component={HomeAdmin} />
+        <Route exact path="/admin/login" component={LoginAdmin} />
+
+
+        <Route exact path="/admin" component={LoginAdmin} />
+        <Route exact path="/admin/home" component={HomeAdmin} />
+        <Route exact path="/admin/users" component={HomeAdmin} />
+        <Route exact path="/admin/profile" component={ProfileAdminNav} />
         <Route exact path="/admin/user/:userId" component={UserDetailNav} />
         <Route exact path="/admin/coaches" component={CoachAdminNav} />
         <Route exact path="/admin/blogs" component={BlogAdminNav} />
         <Route exact path="/admin/revenues" component={RevenueAdminNav} />
         <Route exact path="/admin/classes" component={ClassAdminNav} />
         <Route exact path="/admin/courses" component={CourseAdminNav} />
-        <Route path="/admin/products" component={ProductAdminScreen} />
+        <Route exact path="/admin/workouts" component={WorkoutAdminNav} />
+        <Route exact path="/admin/products" component={ProductAdminNav} />
+        <Route exact path="/admin/transactions" component={TransactionsAdminNav} />
 
         <Route>
           <MainLayout>

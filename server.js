@@ -59,7 +59,7 @@ db.once('open', () => {
 });
 
 // Routes
-const userRoutes = require('./routes/users');
+const userRoutes = require('./routes/web');
 const courseRoutes = require('./routes/courses'); // Thêm route courses
 // const forgotpasswordRoutes = require('./routes/forgotpassword');
 const adviceRoutes = require('./routes/advice');
@@ -71,6 +71,8 @@ const paymentRoutes = require('./routes/payment');
 const attendanceRoutes = require('./routes/attendance');
 const workoutRoutes = require('./routes/workouts');
 const revenueRoutes = require('./routes/revenueController')
+const workoutRouter = require('./routes/workout');
+
 const blogRouter = require('./routes/blogRouter')
   
 // Shop Routes
@@ -89,6 +91,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/workouts', workoutRoutes);
 app.use('/api/revenue', revenueRoutes);
+app.use('/api/workouts', workoutRouter);
 app.use('/api/blogs', blogRouter);
 
 app.use('/api/products', productRoutes);
@@ -314,8 +317,12 @@ app.put('/updateWorkoutStatus', async (req, res) => {
   const { userId, date, status } = req.body;
 
   try {
+    // Convert date to ISO format if needed
+    const isoDate = new Date(date);
+
+    // Find and update the status for all workouts in the specified date
     const schedule = await Schedule.findOneAndUpdate(
-      { userId, 'dailyWorkouts.date': date },
+      { userId, 'dailyWorkouts.date': isoDate },
       { $set: { 'dailyWorkouts.$.status': status } },
       { new: true }
     );
@@ -330,7 +337,6 @@ app.put('/updateWorkoutStatus', async (req, res) => {
     res.status(500).json({ message: 'Unable to update status. Please try again later.' });
   }
 });
-
 
 
 const PORT = process.env.PORT || 5000;

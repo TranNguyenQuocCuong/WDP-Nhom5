@@ -8,7 +8,7 @@ const drawerWidth = 240;
 
 const NavbarAdmin = () => {
     return (
-        <div >
+        <div>
             <Drawer
                 variant="permanent"
                 sx={{
@@ -30,26 +30,32 @@ const NavbarAdmin = () => {
 
                 {/* Navigation Items */}
                 <List>
-                    <ListItem button component={Link} to="/admin">
+                    <ListItem>
                         <ListItemText primary="Dashboard" />
                     </ListItem>
-                    <ListItem button component={Link} to="/admin">
+                    <ListItem button component={Link} to="/admin/users">
                         <ListItemText primary="Users" />
                     </ListItem>
                     <ListItem button component={Link} to="/admin/coaches">
                         <ListItemText primary="Coach" />
                     </ListItem>
-                    <ListItem button component={Link} to="/admin/blogs">
-                        <ListItemText primary="Blog" />
-                    </ListItem>
                     <ListItem button component={Link} to="/admin/revenues">
                         <ListItemText primary="Revenue" />
                     </ListItem>
+                    <List component="div" disablePadding>
+                        <ListItem button component={Link} to="/admin/revenues" sx={{ pl: 4 }}>
+                            <ListItemText primary="Course Revenue" />
+                        </ListItem>
+                        <ListItem button component={Link} to="/admin/transactions" sx={{ pl: 4 }}>
+                            <ListItemText primary="Product Transaction" />
+                        </ListItem>
+                    </List>
+
                     <ListItem button component={Link} to="/admin/classes">
                         <ListItemText primary="Class" />
                     </ListItem>
-                    <ListItem button component={Link} to="/admin/courses">
-                        <ListItemText primary="Courses" />
+                    <ListItem button component={Link} to="/admin/products">
+                        <ListItemText primary="Product" />
                     </ListItem>
                     {/* Add more navigation items here */}
                 </List>
@@ -57,7 +63,7 @@ const NavbarAdmin = () => {
                 {/* Logout Button */}
                 <div style={{ position: 'absolute', bottom: 0, width: '100%' }}>
                     <List>
-                        <ListItem button component={Link} to="/logout">
+                        <ListItem button component={Link} to="/admin">
                             <ListItemText primary="Logout" />
                             <IconButton color="inherit">
                                 <LogoutIcon />
@@ -80,9 +86,9 @@ const NavbarAdmin = () => {
                 >
                     <Toolbar>
                         <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
-
+                            {/* Your title or other content */}
                         </Typography>
-                        <IconButton color="inherit" component={Link} to="/profile" startIcon={<AccountCircleIcon />}>
+                        <IconButton color="inherit" component={Link} to="/admin/profile" startIcon={<AccountCircleIcon />}>
                             <Typography variant="body1" sx={{ ml: 1 }} style={{ color: '#fff', fontWeight: 'bold' }}>Admin</Typography>
                         </IconButton>
                     </Toolbar>

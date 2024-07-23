@@ -1,12 +1,31 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './Login.css';
 import { Link } from 'react-router-dom/cjs/react-router-dom.min'
 import axios from 'axios';
+import { GoogleLogin } from 'react-google-login';
+import { gapi } from "gapi-script";
+import FacebookLoginButton from './facebookLogin';
 
 export default function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+
+    const clientId = '345177848260-gt4s9487god6jt45848agv4ugru143v3.apps.googleusercontent.com';
+
+    useEffect(() => {
+        gapi.load("auth2", () => {
+            gapi.auth2.init({ clientId: clientId })
+        })
+    }, []);
+
+    const onSuccess = (response) => {
+        console.log('[Login Success] currentUser: ', response.profileObj);
+    };
+
+    const onFailure = (response) => {
+        console.log('[Login Failed] response: ', response);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -30,15 +49,21 @@ export default function Login() {
                     <div className="login_wrapper">
                         <div className="row">
                             <div className="col-lg-6 col-md-6 col-xs-12 col-sm-6">
-                                <a href="#" className="btn btn-primary d-flex justify-content-between facebook">
-                                    <span>Login with Facebook</span>
-                                    <i className="fa fa-facebook"></i>
-                                </a>
+                                    <FacebookLoginButton
+                                        className="btn btn-primary d-flex justify-content-between facebook"
+                                        iconClassName="fa fa-facebook"
+                                    />
                             </div>
+
                             <div className="col-lg-6 col-md-6 col-xs-12 col-sm-6">
-                                <a href="#" className="btn btn-primary google-plus">
-                                    Login with Google <i className="fa fa-google-plus"></i>{' '}
-                                </a>
+                                <GoogleLogin clientId={clientId}
+                                    buttonText={"Login with Google"}
+                                    onSuccess={onSuccess}
+                                    onFailure={onFailure} npm i
+                                    cookiePolicy={'single_host_origin'}
+                                    className={'btn btn-primary google-plus'}
+                                    isSignedIn={true}
+                                />
                             </div>
                         </div>
                         <h2>or</h2>

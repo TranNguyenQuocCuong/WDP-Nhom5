@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const Order = require('../models/Order');
 const router = express.Router();
 const User = require('../models/users');
@@ -12,6 +13,7 @@ const session = require('express-session');
 const nodemailer = require('nodemailer');
 const crypto = require("crypto");
 
+// Order creation endpoint
 router.post('/', async (req, res) => {
     const { orderItems, paymentMethod, itemsPrice, taxPrice, shippingPrice, totalPrice, user, shippingAddress } = req.body;
 
@@ -41,11 +43,13 @@ router.post('/', async (req, res) => {
         console.log('createdOrder success');
 
         let paymentUrl = '';
+        const orderId = createdOrder._id.toString(); // Pass the ObjectId as a string
 
         if (paymentMethod === 'MoMo') {
             // Call MoMo payment API
             const paymentResponse = await axios.post(`http://localhost:5000/api/order/momopayment`, {
-                amount: totalPrice
+                amount: totalPrice,
+                orderId: orderId
             });
             paymentUrl = paymentResponse.data.payUrl;
         } else if (paymentMethod === 'VnPay') {
@@ -53,7 +57,8 @@ router.post('/', async (req, res) => {
             const paymentResponse = await axios.post(`http://localhost:5000/api/order/vnppayment`, {
                 amount: totalPrice,
                 orderDescription: 'Payment for order',
-                orderType: 'other'
+                orderType: 'other',
+                orderId: orderId  // Pass the ObjectId as a string
             });
             paymentUrl = paymentResponse.data.payUrl;
         }
@@ -66,17 +71,20 @@ router.post('/', async (req, res) => {
 });
 
 // MoMo Payment Endpoint
+
 router.post("/momopayment", async (req, res) => {
     const accessKey = 'F8BBA842ECF85';
     const secretKey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
     const orderInfo = 'pay with MoMo';
     const partnerCode = 'MOMO';
-    const redirectUrl = 'http://localhost:5000/api/payments/payment-success';
+    const redirectUrl = 'http://localhost:5000/api/order/payment-success';
     const ipnUrl = 'https://webhook.site/b3088a6a-2d17-4f8d-a383-71389a6c600b';
-    const requestType = "captureWallet";
+    const requestType = "payWithCC";
     const amount = req.body.amount || 0;
-    const orderId = `FitZone-${new Date().getTime()}-${uuidv4()}`;
-    const requestId = orderId;
+
+    // Generate MongoDB ObjectId
+    const orderId = new mongoose.Types.ObjectId();
+    const requestId = orderId.toString();
     const extraData = '';
     const autoCapture = true;
     const lang = 'vi';
@@ -93,7 +101,7 @@ router.post("/momopayment", async (req, res) => {
         storeId: "MomoTestStore",
         requestId: requestId,
         amount: amount,
-        orderId: orderId,
+        orderId: orderId.toString(),
         orderInfo: orderInfo,
         redirectUrl: redirectUrl,
         ipnUrl: ipnUrl,
@@ -125,31 +133,49 @@ router.post("/momopayment", async (req, res) => {
 });
 
 
+// Payment success handling
 router.get("/payment-success", async (req, res) => {
     try {
+        const { resultCode, orderId, message } = req.query; // or req.body if MoMo sends via POST
+
+        // Convert string orderId to ObjectId
+        const orderObjectId = new mongoose.Types.ObjectId(orderId);
+
         if (resultCode === '0') {
             console.log(`Giao dịch thành công. Mã đơn hàng: ${orderId}`);
 
-            // Update the order in the database
-            await Order.findByIdAndUpdate(
-                orderId,
+            const updatedOrder = await Order.findByIdAndUpdate(
+                orderObjectId,
                 {
                     isPaid: true,
-                    paidAt: new Date(), // Set the paidAt to the current date and time
+                    paidAt: new Date(),
                 },
-                { new: true } // Return the updated document
+                { new: true }
             );
 
-            return res.redirect('http://localhost:3000/Gym-Website#/shop');
+            // if (updatedOrder) {
+            //     const userId = updatedOrder.user;
+
+            //     await User.findByIdAndUpdate(
+            //         userId,
+            //         { $inc: { balance: updatedOrder.totalPrice } },
+            //         { new: true }
+            //     );
+
+            //     console.log(`User balance updated for userId: ${userId}`);
+            // }
+
+            return res.redirect('http://localhost:3000/Gym-Website#/user/transactions');
         } else {
             console.log(`Giao dịch thất bại. Thông báo từ MoMo: ${message}`);
             return res.redirect('http://localhost:3000/Gym-Website#/');
         }
     } catch (error) {
-        console.error(`Error updating order: ${error}`);
+        console.error(`Error updating order or user: ${error}`);
         return res.redirect('http://localhost:3000/Gym-Website#/');
     }
 });
+
 
 function sortObject(obj) {
     let sorted = {};
@@ -181,15 +207,14 @@ router.post('/vnppayment', function (req, res, next) {
     var tmnCode = config.get('vnp_TmnCode');
     var secretKey = config.get('vnp_HashSecret');
     var vnpUrl = config.get('vnp_Url');
-    var returnUrl = config.get('vnp_ReturnUrl');
+    var returnUrl = 'http://localhost:5000/api/order/vnpay_ipn';
 
     var date = new Date();
-
     var createDate = dateFormat(date, 'yyyymmddHHmmss');
-    var orderId = dateFormat(date, 'HHmmss');
+    var orderId = req.body.orderId || dateFormat(date, 'HHmmss'); // Use orderId from request body
     console.log('>>> createDate, orderId: ', createDate, '  --  ', orderId);
     var amount = req.body.amount || 0;
-    console.log('>>> amount: ', amount)
+    console.log('>>> amount: ', amount);
     var bankCode = '';
 
     var orderInfo = 'Ngkn Check 1' || req.body.orderDescription;
@@ -203,7 +228,6 @@ router.post('/vnppayment', function (req, res, next) {
     vnp_Params['vnp_Version'] = '2.1.0';
     vnp_Params['vnp_Command'] = 'pay';
     vnp_Params['vnp_TmnCode'] = tmnCode;
-    // vnp_Params['vnp_Merchant'] = ''
     vnp_Params['vnp_Locale'] = locale;
     vnp_Params['vnp_CurrCode'] = currCode;
     vnp_Params['vnp_TxnRef'] = orderId;
@@ -223,14 +247,13 @@ router.post('/vnppayment', function (req, res, next) {
     var signData = querystring.stringify(vnp_Params, { encode: false });
     var crypto = require("crypto");
     var hmac = crypto.createHmac("sha512", secretKey);
-    var signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
+    var signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
     vnp_Params['vnp_SecureHash'] = signed;
     vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
 
     console.log('----------------------------------URL------------------------------')
     console.log(vnpUrl)
     console.log('----------------------------------URL------------------------------')
-
 
     res.status(200).json({ payUrl: vnpUrl });
 });
@@ -265,7 +288,7 @@ router.get('/vnpay_ipn', async function (req, res, next) {
                         if (rspCode === "00") {
                             // Payment successful
                             console.log('>>> Payment successful. rspCode:', rspCode);
-
+                            console.log('>>> orderId ipn: ', orderId);
                             // Update the order in the database
                             await Order.findByIdAndUpdate(
                                 orderId,
@@ -276,35 +299,35 @@ router.get('/vnpay_ipn', async function (req, res, next) {
                                 { new: true } // Return updated document
                             );
 
-                            return res.redirect('http://localhost:3000/Gym-Website#/shop');
+                            return res.redirect('http://localhost:3000/#/user/transactions');
                         } else {
                             // Payment failed
                             console.log('>>> Payment failed. rspCode:', rspCode);
-                            return res.redirect('http://localhost:3000/#/shop');
+                            return res.redirect('http://localhost:3000/#/user/transactions');
                         }
                     } else {
                         // Order already updated
                         console.log('>>> Order already updated. rspCode:', rspCode);
-                        return res.status(200).json({ RspCode: '02', Message: 'This order has been updated to the payment status' });
+                        return res.redirect('http://localhost:3000/#/user/transactions');
                     }
                 } else {
                     // Amount invalid
                     console.log('>>> Invalid amount. rspCode:', rspCode);
-                    return res.status(200).json({ RspCode: '04', Message: 'Amount invalid' });
+                    return res.redirect('http://localhost:3000/#/user/transactions');
                 }
             } else {
                 // Order not found
                 console.log('>>> Order not found. rspCode:', rspCode);
-                return res.status(200).json({ RspCode: '01', Message: 'Order not found' });
+                return res.redirect('http://localhost:3000/#/user/transactions');
             }
         } else {
             // Checksum failed
             console.log('>>> Checksum failed. rspCode:', rspCode);
-            return res.status(200).json({ RspCode: '97', Message: 'Checksum failed' });
+            return res.redirect('http://localhost:3000/#/user/transactions');
         }
     } catch (error) {
         console.error('>>> Error processing payment IPN:', error);
-        return res.status(500).json({ RspCode: '99', Message: 'Internal server error' });
+        return res.redirect('http://localhost:3000/#/user/transactions');
     }
 });
 

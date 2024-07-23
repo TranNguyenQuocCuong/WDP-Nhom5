@@ -6,7 +6,7 @@ import UserSchedule from '../components/EditUserSchedule';
 export default function EditUserScheduleNav() {
     return (
         <>
-            <PageHeader title="Profile" readOnly />
+            <PageHeader title="Edit Schedule" readOnly />
             <UserSchedule />
         </>
     )
