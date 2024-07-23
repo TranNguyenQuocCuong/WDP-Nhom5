@@ -3,9 +3,9 @@ import axios from 'axios';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
     Dialog, DialogTitle, DialogContent, TextField, Button, DialogActions,
-    Typography, IconButton, TablePagination
+    Typography, IconButton, TablePagination, Box
 } from '@mui/material';
-import { Add as AddIcon, Edit as EditIcon, Block as BlockIcon, CheckCircle as CheckCircleIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
+import { Add as AddIcon, Edit as EditIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
 
 function CoachAdmin() {
@@ -22,12 +22,11 @@ function CoachAdmin() {
         experience: '',
         password: ''
     });
-
     const [statusDialogOpen, setStatusDialogOpen] = useState(false);
     const [statusToChange, setStatusToChange] = useState(null);
-
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const history = useHistory();
 
@@ -126,8 +125,37 @@ function CoachAdmin() {
         history.push(`/admin/coach/${coachId}`);
     };
 
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
+    const filteredCoaches = coaches.filter(coach =>
+        coach.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        coach.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        coach.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
-        <div style={{ marginLeft: '250px' }}>
+        <div style={{ marginLeft: '250px', padding: '16px' }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<AddIcon />}
+                    onClick={handleAddCoach}
+                >
+                    Add Coach
+                </Button>
+                <TextField
+                    label="Search"
+                    variant="outlined"
+                    size="small"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    style={{ width: '300px' }}
+                />
+            </Box>
+
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
@@ -143,7 +171,7 @@ function CoachAdmin() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {coaches.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((coach, index) => (
+                        {filteredCoaches.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((coach, index) => (
                             <TableRow key={coach._id}>
                                 <TableCell>{index + 1}</TableCell>
                                 <TableCell>{coach.username}</TableCell>
@@ -152,7 +180,6 @@ function CoachAdmin() {
                                 <TableCell>{coach.address}</TableCell>
                                 <TableCell>{coach.age}</TableCell>
                                 <TableCell>{coach.experience}</TableCell>
-
                                 <TableCell>
                                     <IconButton color="primary" onClick={() => handleRowClick(coach)}>
                                         <EditIcon />
@@ -168,23 +195,13 @@ function CoachAdmin() {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component="div"
-                    count={coaches.length}
+                    count={filteredCoaches.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </TableContainer>
-
-            <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                style={{ marginTop: 16 }}
-                onClick={handleAddCoach}
-            >
-                Add Coach
-            </Button>
 
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>{isAdding ? 'Add Coach' : 'Edit Coach'}</DialogTitle>

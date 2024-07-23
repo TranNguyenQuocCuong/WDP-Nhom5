@@ -18,7 +18,8 @@ router.post("/momopayment", async (req, res) => {
     var partnerCode = 'MOMO';
     var redirectUrl = 'http://localhost:5000/api/payments/payment-success';
     var ipnUrl = 'https://webhook.site/b3088a6a-2d17-4f8d-a383-71389a6c600b';
-    var requestType = "captureWallet";
+    // var requestType = "captureWallet";
+    var requestType = "payWithCC";
     var amount = req.body.coursePrice || 0;
     var orderId = `FitZone-${new Date().getTime()}-${uuidv4()}`;
     var requestId = orderId;
@@ -74,12 +75,8 @@ router.post("/momopayment", async (req, res) => {
     }
 
 
-    /////////////////////////////////////////////////////
 
 
-
-
-    const { coursePrice, name, email, phone, courseId } = req.body;
     var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -88,11 +85,92 @@ router.post("/momopayment", async (req, res) => {
         }
     });
 
-    var mailOptions = {
-        from: 'phandinhdan6666@gmail.com',
-        to: email,
-        subject: 'Member registration successful',
-        html: `
+    /////////////////////////////////////////////////////
+
+
+
+
+    const { coursePrice, name, email, phone, courseId } = req.body;
+
+
+
+    /////////////////////////////////////////////////////
+    const generateRandomString = () => {
+        return Math.random().toString(36).substring(2, 10);
+    };
+
+
+    try {
+        // Find user based on email
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            console.log('User not found. Creating a new user.');
+
+            // Generate random username and password
+            const username = generateRandomString();
+            const password = generateRandomString();
+
+            // Create new user
+            user = new User({
+                username,
+                password,
+                email,
+                name,
+                phone,
+                subscribedCourses: [courseId]
+            });
+
+            await user.save();
+            console.log('New user created successfully');
+
+
+
+
+            var mailOptions = {
+                from: 'phandinhdan6666@gmail.com',
+                to: email,
+                subject: 'Member registration successful',
+                html: `
+            <h1>Member registration successful</h1>
+            <p>Dear ${name},</p>
+            <p>Thank you for registering for our course. We are delighted to have you join us!</p>
+            <p>Here are the details of your registration:</p>
+            <ul>
+                <li><strong>Name:</strong> ${name}</li>
+                <li><strong>Email:</strong> ${email}</li>
+                <li><strong>Phone Number:</strong> ${phone}</li>
+                <li><strong>Course Price:</strong> ${coursePrice} VNĐ</li>
+            </ul>
+            <p>And your account to login page</p>
+            <ul>
+                <li><strong>Username:</strong> ${username}</li>
+                <li><strong>Password:</strong> ${password}</li>
+            </ul>
+            <p>If you have any questions or need further assistance, please feel free to contact us.</p>
+            <p>Best regards,<br>FitZone Team<</p>
+        `
+            };
+        } else {
+            // Check if courseId is already in the subscribedCourses array
+            if (user.subscribedCourses.includes(courseId)) {
+                console.log('Course already subscribed');
+                return;
+            }
+
+            // Add courseId to subscribedCourses array
+            user.subscribedCourses.push(courseId);
+
+            // Save changes to MongoDB
+            await user.save();
+            console.log('Course added successfully');
+
+
+            var mailOptions = {
+                from: 'phandinhdan6666@gmail.com',
+                to: email,
+                subject: 'Member registration successful',
+                html: `
             <h1>Member registration successful</h1>
             <p>Dear ${name},</p>
             <p>Thank you for registering for our course. We are delighted to have you join us!</p>
@@ -104,9 +182,46 @@ router.post("/momopayment", async (req, res) => {
                 <li><strong>Course Price:</strong> ${coursePrice} VNĐ</li>
             </ul>
             <p>If you have any questions or need further assistance, please feel free to contact us.</p>
-            <p>Best regards,<br>Your Organization</p>
+            <p>Best regards, <br>FitZone Team</p>
         `
-    };
+            };
+        }
+
+    } catch (error) {
+        console.error('Error adding course to user:', error);
+    }
+
+
+    // try {
+    //     // Tìm người dùng dựa trên email
+    //     const user = await User.findOne({ email });
+
+    //     if (!user) {
+    //         console.log('User not found');
+    //     }
+
+    //     // Kiểm tra xem courseId đã có trong mảng subscribedCourses chưa
+    //     if (user.subscribedCourses.includes(courseId)) {
+    //         console.log('Course already subscribed');
+    //     }
+
+    //     // Thêm courseId vào mảng subscribedCourses
+    //     user.subscribedCourses.push(courseId);
+
+    //     // Lưu thay đổi vào MongoDB
+    //     await user.save();
+
+    //     // Gửi phản hồi thành công
+    //     console.log('Course added successfully');
+
+    // } catch (error) {
+    //     console.error('Error adding course to user:', error);
+    // }
+
+
+
+    /////////////////////////////////////////////////////
+
 
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
@@ -144,42 +259,6 @@ router.post("/momopayment", async (req, res) => {
     // }
 
 
-    /////////////////////////////////////////////////////
-
-
-
-
-
-
-    try {
-        // Tìm người dùng dựa trên email
-        const user = await User.findOne({ email });
-
-        if (!user) {
-            console.log('User not found');
-        }
-
-        // Kiểm tra xem courseId đã có trong mảng subscribedCourses chưa
-        if (user.subscribedCourses.includes(courseId)) {
-            console.log('Course already subscribed');
-        }
-
-        // Thêm courseId vào mảng subscribedCourses
-        user.subscribedCourses.push(courseId);
-
-        // Lưu thay đổi vào MongoDB
-        await user.save();
-
-        // Gửi phản hồi thành công
-        console.log('Course added successfully');
-
-    } catch (error) {
-        console.error('Error adding course to user:', error);
-    }
-
-
-
-    /////////////////////////////////////////////////////
 });
 
 router.get("/payment-success", async (req, res) => {

@@ -5,7 +5,7 @@ import {
     Dialog, DialogTitle, DialogContent, TextField, Button, DialogActions,
     IconButton, TablePagination, Tabs, Tab
 } from '@mui/material';
-import { Add as AddIcon, Edit as EditIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
+import { Add as AddIcon, Edit as EditIcon } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
@@ -13,6 +13,7 @@ import moment from 'moment';
 
 function RevenueAdmin() {
     const [revenues, setRevenues] = useState([]);
+    const [filteredRevenues, setFilteredRevenues] = useState([]);
     const [selectedRevenue, setSelectedRevenue] = useState(null);
     const [open, setOpen] = useState(false);
     const [isAdding, setIsAdding] = useState(false);
@@ -25,20 +26,40 @@ function RevenueAdmin() {
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [tabValue, setTabValue] = useState(0); // State to manage active tab
+    const [tabValue, setTabValue] = useState(0);
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
 
     const history = useHistory();
 
     useEffect(() => {
+        fetchRevenues();
+    }, []);
+
+    useEffect(() => {
+        filterRevenues();
+    }, [startDate, endDate, revenues]);
+
+    const fetchRevenues = () => {
         axios.get('http://localhost:5000/api/revenue')
             .then(response => {
-                console.log(response.data); // Kiểm tra dữ liệu
                 setRevenues(response.data);
             })
             .catch(error => {
                 console.error("There was an error fetching the revenues!", error);
             });
-    }, []);
+    };
+
+    const filterRevenues = () => {
+        let filtered = [...revenues];
+        if (startDate) {
+            filtered = filtered.filter(r => moment(r.date).isSameOrAfter(startDate));
+        }
+        if (endDate) {
+            filtered = filtered.filter(r => moment(r.date).isSameOrBefore(endDate));
+        }
+        setFilteredRevenues(filtered);
+    };
 
     const handleRowClick = (revenue) => {
         setSelectedRevenue(revenue);
@@ -119,6 +140,12 @@ function RevenueAdmin() {
         setTabValue(newValue);
     };
 
+    const handleDateChange = (e) => {
+        const { name, value } = e.target;
+        if (name === 'startDate') setStartDate(value);
+        if (name === 'endDate') setEndDate(value);
+    };
+
     // Prepare Chart Data
     const prepareChartData = () => {
         if (revenues.length === 0) return { labels: [], datasets: [] };
@@ -161,6 +188,33 @@ function RevenueAdmin() {
 
             {tabValue === 0 && (
                 <div>
+                    <div style={{ margin: '16px 0' }}>
+                        <TextField
+                            label="Start Date"
+                            type="date"
+                            name="startDate"
+                            value={startDate}
+                            onChange={handleDateChange}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            style={{ marginRight: '16px' }}
+                        />
+                        <TextField
+                            label="End Date"
+                            type="date"
+                            name="endDate"
+                            value={endDate}
+                            onChange={handleDateChange}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                        />
+                        {/* <Button variant="contained" color="primary" onClick={filterRevenues} style={{ marginLeft: '16px' }}>
+                            Filter
+                        </Button> */}
+                    </div>
+
                     <TableContainer component={Paper}>
                         <Table>
                             <TableHead>
@@ -174,7 +228,7 @@ function RevenueAdmin() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {revenues.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((revenue, index) => (
+                                {filteredRevenues.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((revenue, index) => (
                                     <TableRow key={revenue._id}>
                                         <TableCell>{index + 1}</TableCell>
                                         <TableCell>{revenue.planId || 'N/A'}</TableCell>
@@ -193,9 +247,6 @@ function RevenueAdmin() {
                                             <IconButton color="primary" onClick={() => handleRowClick(revenue)}>
                                                 <EditIcon />
                                             </IconButton>
-                                            <IconButton color="info" onClick={() => handleViewRevenue(revenue._id)}>
-                                                <VisibilityIcon />
-                                            </IconButton>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -204,7 +255,7 @@ function RevenueAdmin() {
                         <TablePagination
                             rowsPerPageOptions={[5, 10, 25]}
                             component="div"
-                            count={revenues.length}
+                            count={filteredRevenues.length}
                             rowsPerPage={rowsPerPage}
                             page={page}
                             onPageChange={handleChangePage}
@@ -216,8 +267,8 @@ function RevenueAdmin() {
                         variant="contained"
                         color="primary"
                         startIcon={<AddIcon />}
-                        style={{ marginTop: 16 }}
                         onClick={handleAddRevenue}
+                        style={{ margin: '16px' }}
                     >
                         Add Revenue
                     </Button>

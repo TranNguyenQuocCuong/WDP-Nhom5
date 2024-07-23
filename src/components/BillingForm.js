@@ -1,5 +1,4 @@
-// BillingForm.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
@@ -40,7 +39,7 @@ export default function BillingForm() {
             name: billingInfo.name,
             email: billingInfo.email,
             phone: billingInfo.phone,
-            courseId: course._id  // Assuming course._id is accessible in your component
+            courseId: course._id
         };
 
         axios.post('http://localhost:5000/api/payments/momopayment', data)
@@ -61,7 +60,7 @@ export default function BillingForm() {
             name: billingInfo.name,
             email: billingInfo.email,
             phone: billingInfo.phone,
-            courseId: course._id  // Assuming course._id is accessible in your component
+            courseId: course._id
         };
 
         axios.post('http://localhost:5000/api/payments/vnppayment', data)
@@ -76,15 +75,36 @@ export default function BillingForm() {
             });
     };
 
-
     const handleFormSubmit = (e) => {
         e.preventDefault();
         handleButtonClick(course.price);
     };
 
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            axios.get('http://localhost:5000/api/users/userProfile', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+                .then(response => {
+                    const { name, email, phone } = response.data;
+                    setBillingInfo({
+                        ...billingInfo,
+                        name,
+                        email,
+                        phone
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching profile:', error);
+                });
+        }
+    }, []);
+
     return (
         <div className="container mt-5">
-            <h2>Billing Information</h2>
             <form onSubmit={handleFormSubmit}>
                 <div className="mb-3">
                     <label htmlFor="courseName" className="form-label">Course Name</label>

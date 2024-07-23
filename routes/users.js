@@ -151,10 +151,10 @@ router.get('/userProfile', authenticateToken, async (req, res) => {
     // const username = req.params.username;
     // const user = await User.findById(req.user.id)
     // console.log(">>> username >>> ", username);
-    console.log(">>> req.user.id >>> ", req.user.id);
+    // console.log(">>> req.user.id >>> ", req.user.id);
     try {
         const user = await User.findById(req.user.id)
-        console.log('>>> user: ', user);
+        // console.log('>>> user: ', user);
         if (!user) {
             return res.status(400).json({ msg: 'User not found' });
         }
@@ -289,7 +289,7 @@ router.put('/:id/progress', authenticateToken, async (req, res) => {
 // Fetch User Transactions by User ID
 router.get('/:userId/transactions', async (req, res) => {
     const { userId } = req.params;
-    console.log('>>> userId transaction', userId);
+    // console.log('>>> userId transaction', userId);
     try {
         // Fetch orders for the specified user
         const orders = await Order.find({ user: userId }).sort({ createdAt: -1 });

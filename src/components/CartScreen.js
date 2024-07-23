@@ -143,7 +143,7 @@ const CartScreen = () => {
                                     <img src={product.image} alt={product.name} className="cart-item-image" />
                                     <div className="cart-item-info">
                                         <span>{product.name}</span>
-                                        <span>${product.price.toFixed(2)}</span>
+                                        <span>{product.price}đ</span>
                                         <input
                                             type="number"
                                             min="1"
@@ -196,12 +196,12 @@ const CartScreen = () => {
                     </div>
                     <div className="cart-summary">
                         <p>Total Items: {cart.reduce((total, product) => total + product.quantity, 0)}</p>
-                        <p>Subtotal: {totals.subtotal.toFixed(2)}đ</p>
+                        <p>Subtotal: {totals.subtotal}đđ</p>
                         <hr className="divider" />
                         <p>Tax (10%): {totals.tax}đ</p>
                         {address && <p>Shipping Price: {totals.shipping}đ</p>}
                         <hr className="divider" />
-                        <p style={{ marginTop: '20px' }}>Total Price: {totals.total}đ</p>
+                        <p style={{ marginTop: '10px' }}>Total Price: {totals.total}đ</p>
                         <button
                             className="payment-button"
                             onClick={handlePayment}
