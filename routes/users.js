@@ -122,12 +122,11 @@ router.post('/login', async (req, res) => {
 });
 
 // Route to edit user profile
-router.put('/edit/:userId', async (req, res) => {
-    const { userId } = req.params;
+router.put('/edit/:userId', authenticateToken, async (req, res) => {
     const { password, name, address, gender, age } = req.body;
 
     try {
-        const user = await User.findById(userId);
+        const user = await User.findById(req.user.id)
         if (!user) {
             return res.status(404).json({ msg: 'User not found' });
         }
@@ -211,14 +210,13 @@ router.put('/edit-profile', authenticateToken, async (req, res) => {
 
 
 // Change password route
-router.put('/change-password', async (req, res) => {
+router.put('/change-password', authenticateToken, async (req, res) => {
     const { currentPassword, newPassword } = req.body;
 
     // currentPassword = '123abc'
     // newPassword = '123456'
     try {
-        // const user = await User.findById(userId);
-        const user = await User.findOne({ username: "User1" });
+        const user = await User.findById(req.user.id)
 
         if (!user) {
             return res.status(400).json({ msg: 'User not found' });

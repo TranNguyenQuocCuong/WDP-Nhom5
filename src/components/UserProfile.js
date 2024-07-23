@@ -69,6 +69,11 @@ const GetUserProfile = () => {
             const response = await axios.put('http://localhost:5000/api/users/change-password', {
                 currentPassword: currentPassword,
                 newPassword: newPassword
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
             });
             alert('Change password successfully');
             setCurrentPassword('');
@@ -201,7 +206,8 @@ const GetUserProfile = () => {
                                             type="text"
                                             id="input-age"
                                             className="form-control"
-                                            value={profile && profile.age}
+                                            value={age}
+                                            onChange={(e) => setAge(e.target.value)}
                                             readOnly={isEditing}
                                         />
                                     </div>
@@ -211,7 +217,7 @@ const GetUserProfile = () => {
                                             type="text"
                                             id="input-phone"
                                             className="form-control"
-                                            value={profile && profile.phone}
+                                            value={phone}
                                             onChange={(e) => setPhone(e.target.value)}
                                             readOnly={isEditing}
                                         />
@@ -222,7 +228,7 @@ const GetUserProfile = () => {
                                             type="text"
                                             id="input-address"
                                             className="form-control"
-                                            value={profile && profile.address}
+                                            value={address}
                                             onChange={(e) => setAddress(e.target.value)}
                                             readOnly={isEditing}
                                         />

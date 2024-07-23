@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import './Login.css';
 import { Link } from 'react-router-dom/cjs/react-router-dom.min'
 import axios from 'axios';
+import FacebookLoginButton from './facebookLogin';
+import GoogleLoginButton from './googleLogin';
 
 export default function Login() {
     const [username, setUsername] = useState('');
@@ -30,15 +32,16 @@ export default function Login() {
                     <div className="login_wrapper">
                         <div className="row">
                             <div className="col-lg-6 col-md-6 col-xs-12 col-sm-6">
-                                <a href="#" className="btn btn-primary d-flex justify-content-between facebook">
-                                    <span>Login with Facebook</span>
-                                    <i className="fa fa-facebook"></i>
-                                </a>
+                                <FacebookLoginButton
+                                    className="btn btn-primary d-flex justify-content-between facebook"
+                                    iconClassName="fa fa-facebook"
+                                />
                             </div>
                             <div className="col-lg-6 col-md-6 col-xs-12 col-sm-6">
-                                <a href="#" className="btn btn-primary google-plus">
-                                    Login with Google <i className="fa fa-google-plus"></i>{' '}
-                                </a>
+                                <GoogleLoginButton
+                                    className="btn btn-primary google-plus"
+                                    iconClassName="fa fa-google-plus"
+                                />
                             </div>
                         </div>
                         <h2>or</h2>

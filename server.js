@@ -59,7 +59,7 @@ db.once('open', () => {
 });
 
 // Routes
-const userRoutes = require('./routes/users');
+const userRoutes = require('./routes/web');
 const courseRoutes = require('./routes/courses'); // Thêm route courses
 // const forgotpasswordRoutes = require('./routes/forgotpassword');
 const adviceRoutes = require('./routes/advice');
