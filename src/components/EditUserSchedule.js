@@ -86,7 +86,7 @@ const EditUserSchedule = () => {
                                             {schedule.dailyWorkouts[0].workouts.map((workout, index) => (
                                                 <div key={index}>
                                                     {workout}
-                                                    <button className="btn btn-sm btn-danger remove-event" onClick={() => removeWorkout(schedule._id)}>×</button>
+                                                    <i className="fa fa-times remove-icon" onClick={() => removeWorkout(schedule._id)}></i>
                                                 </div>
                                             ))}
                                         </div>
@@ -113,7 +113,7 @@ const EditUserSchedule = () => {
         const eventDate = moment(date);
         const today = moment();
         if (eventDate.isBefore(today, 'day')) {
-            showAlert("Cannot add events to past dates.", "alert-danger");
+            showAlert("Cannot add workouts to past dates.", "alert-danger");
             return;
         }
 
@@ -234,14 +234,14 @@ const EditUserSchedule = () => {
         <div className="content container">
             <div className="row">
                 <div className="col-md-4">
-                    <h4>Add Event</h4>
+                    <h4>Add Workouts</h4>
                     <div className="form-group">
                         <label htmlFor="eventDate">Select Date:</label>
                         <input type="date" id="eventDate" className="form-control" />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="searchEvent">Search Event:</label>
-                        <input type="text" id="searchEvent" className="form-control search-input" placeholder="Search event..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                        <label htmlFor="searchEvent">Search Workouts:</label>
+                        <input type="text" id="searchEvent" className="form-control search-input" placeholder="Search workouts..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                     </div>
                     <div id="event-list" className="event-list list-group">
                         {filterEventList()}

@@ -3,13 +3,15 @@ import axios from 'axios';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
     Dialog, DialogTitle, DialogContent, TextField, Button, DialogActions,
-    Typography, IconButton, TablePagination
+    Typography, IconButton, TablePagination, InputAdornment, Box
 } from '@mui/material';
-import { Add as AddIcon, Edit as EditIcon, Block as BlockIcon, CheckCircle as CheckCircleIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
+import { Add as AddIcon, Edit as EditIcon, Block as BlockIcon, CheckCircle as CheckCircleIcon, Search as SearchIcon } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
 
 function HomeAdmin() {
     const [users, setUsers] = useState([]);
+    const [filteredUsers, setFilteredUsers] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
     const [selectedUser, setSelectedUser] = useState(null);
     const [open, setOpen] = useState(false);
     const [isAdding, setIsAdding] = useState(false);
@@ -36,11 +38,22 @@ function HomeAdmin() {
         axios.get('http://localhost:5000/api/admins/user')
             .then(response => {
                 setUsers(response.data);
+                setFilteredUsers(response.data);
             })
             .catch(error => {
                 console.error("There was an error fetching the users!", error);
             });
     }, []);
+
+    useEffect(() => {
+        setFilteredUsers(
+            users.filter(user =>
+                user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                user.name.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+        );
+    }, [searchQuery, users]);
 
     const handleRowClick = (user) => {
         setSelectedUser(user);
@@ -145,6 +158,10 @@ function HomeAdmin() {
         setPage(0);
     };
 
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
     const handleViewUser = (userId) => {
         history.push(`/api/user/${userId}`);
     };
@@ -170,6 +187,22 @@ function HomeAdmin() {
 
     return (
         <div style={{ marginLeft: '250px' }}>
+            <Box display="flex" justifyContent="flex-end" mb={2}>
+                <TextField
+                    variant="outlined"
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <SearchIcon />
+                            </InputAdornment>
+                        )
+                    }}
+                    style={{ width: '25%' }} // Điều chỉnh kích thước ô tìm kiếm
+                />
+            </Box>
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
@@ -183,7 +216,7 @@ function HomeAdmin() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user, index) => (
+                        {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user, index) => (
                             <TableRow key={user._id}>
                                 <TableCell>{index + 1}</TableCell>
                                 <TableCell>{user.username}</TableCell>
@@ -194,9 +227,9 @@ function HomeAdmin() {
                                     <IconButton color="primary" onClick={() => handleRowClick(user)}>
                                         <EditIcon />
                                     </IconButton>
-                                    <IconButton color="info" onClick={() => handleViewUser(user._id)}>
+                                    {/* <IconButton color="info" onClick={() => handleViewUser(user._id)}>
                                         <VisibilityIcon />
-                                    </IconButton>
+                                    </IconButton> */}
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -205,7 +238,7 @@ function HomeAdmin() {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component="div"
-                    count={users.length}
+                    count={filteredUsers.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}
@@ -297,7 +330,7 @@ function HomeAdmin() {
                         value={formData.phone}
                         onChange={handleInputChange}
                     />
-                    {isAdding && (
+                    {!isAdding && (
                         <TextField
                             margin="dense"
                             name="password"
@@ -315,15 +348,15 @@ function HomeAdmin() {
                         Cancel
                     </Button>
                     <Button onClick={handleSave} color="primary">
-                        {isAdding ? 'Add' : 'Save'}
+                        Save
                     </Button>
                 </DialogActions>
             </Dialog>
 
             <Dialog open={statusDialogOpen} onClose={handleClose}>
-                <DialogTitle>Confirm {statusToChange}</DialogTitle>
+                <DialogTitle>Change Status</DialogTitle>
                 <DialogContent>
-                    <Typography>Are you sure you want to confirn this User to {statusToChange}?</Typography>
+                    <Typography>Are you sure you want to {statusToChange} this user?</Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color="primary">

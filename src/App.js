@@ -47,6 +47,7 @@ import CoachAdminNav from './admin-pages/CoachAdminNav'
 import RevenueAdminNav from './admin-pages/RevenueAdminNav'
 import ClassAdminNav from './admin-pages/ClassAdminNav'
 import CourseAdminNav from './admin-pages/CourseAdminNav'
+import WorkoutAdminNav from './admin-pages/WorkoutAdminNav'
 import ProductAdminNav from './admin-pages/ProductAdminNav';
 import TransactionsAdminNav from './admin-pages/TransactionsAdminNav';
 
@@ -71,12 +72,14 @@ function App() {
 
         <Route exact path="/admin" component={LoginAdmin} />
         <Route exact path="/admin/home" component={HomeAdmin} />
+        <Route exact path="/admin/users" component={HomeAdmin} />
         <Route exact path="/admin/profile" component={ProfileAdminNav} />
         <Route exact path="/admin/user/:userId" component={UserDetailNav} />
         <Route exact path="/admin/coaches" component={CoachAdminNav} />
         <Route exact path="/admin/revenues" component={RevenueAdminNav} />
         <Route exact path="/admin/classes" component={ClassAdminNav} />
         <Route exact path="/admin/courses" component={CourseAdminNav} />
+        <Route exact path="/admin/workouts" component={WorkoutAdminNav} />
         <Route exact path="/admin/products" component={ProductAdminNav} />
         <Route exact path="/admin/transactions" component={TransactionsAdminNav} />
 

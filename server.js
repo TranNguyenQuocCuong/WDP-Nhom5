@@ -69,6 +69,7 @@ const adminRouter = require('./routes/adminRouter');
 const reportRouter = require('./routes/reportRouter');
 const paymentRoutes = require('./routes/payment');
 const revenueRoutes = require('./routes/revenueController')
+const workoutRouter = require('./routes/workout');
 
 // Shop Routes
 const productRoutes = require('./routes/productRoutes');
@@ -84,7 +85,7 @@ app.use('/api/reports', reportRouter);
 app.use('/api/admins', adminRouter);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/revenue', revenueRoutes);
-
+app.use('/api/workouts', workoutRouter);
 app.use('/api/products', productRoutes);
 app.use('/api/order', orderRoutes);
 
@@ -308,8 +309,12 @@ app.put('/updateWorkoutStatus', async (req, res) => {
   const { userId, date, status } = req.body;
 
   try {
+    // Convert date to ISO format if needed
+    const isoDate = new Date(date);
+
+    // Find and update the status for all workouts in the specified date
     const schedule = await Schedule.findOneAndUpdate(
-      { userId, 'dailyWorkouts.date': date },
+      { userId, 'dailyWorkouts.date': isoDate },
       { $set: { 'dailyWorkouts.$.status': status } },
       { new: true }
     );
@@ -324,7 +329,6 @@ app.put('/updateWorkoutStatus', async (req, res) => {
     res.status(500).json({ message: 'Unable to update status. Please try again later.' });
   }
 });
-
 
 
 const PORT = process.env.PORT || 5000;

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-const WorkoutSchema = new mongoose.Schema({
+const WorkoutSchema = new Schema({
     name: {
         type: String,
         required: true
@@ -11,6 +12,11 @@ const WorkoutSchema = new mongoose.Schema({
     },
     description: {
         type: String,
+        required: true
+    },
+    courseId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Course',
         required: true
     }
 });

@@ -54,6 +54,12 @@ const UserSchema = new mongoose.Schema({
     },
 });
 
+const User = mongoose.model('User', UserSchema);
+
+module.exports = User;
+
+
+
 // // Băm mật khẩu trước khi lưu
 // UserSchema.pre('save', async function (next) {
 //     if (!this.isModified('password')) {
@@ -63,7 +69,3 @@ const UserSchema = new mongoose.Schema({
 //     this.password = await bcrypt.hash(this.password, salt);
 //     next();
 // });
-
-const User = mongoose.model('User', UserSchema);
-
-module.exports = User;

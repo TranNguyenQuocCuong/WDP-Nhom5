@@ -62,7 +62,7 @@ adminRouter.route('/adminforgot')
           from: 'phandinhdan6666@gmail.com',
           to: admin.email,
           subject: 'Password Reset Request',
-          text: `Hello ${admin.username},\n\nYour current username is: ${admin.password}\nPassword is: ${admin.password}\n\nPlease change it as soon as possible.\n\nBest regards,\nFitZone Team`
+          text: `Hello ${admin.username},\n\nYour current username is: ${admin.username}\nPassword is: ${admin.password}\n\nPlease change it as soon as possible.\n\nBest regards,\nFitZone Team`
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
@@ -254,7 +254,7 @@ adminRouter.route("/coach/:coachId")
       .catch((err) => next(err));
   });
 
-// Lấy thông tin coach và advisedUsers
+/// Lấy thông tin coach và advisedUsers
 adminRouter.route("/coach/:coachId")
   .get((req, res, next) => {
     Coaches.findById(req.params.coachId)
@@ -289,6 +289,30 @@ adminRouter.route("/coach/:coachId/advisedUsers")
       .then((coach) => {
         if (coach) {
           coach.advisedUsers = [...coach.advisedUsers, ...userIds];
+          coach.save()
+            .then(updatedCoach => {
+              Users.find({ '_id': { $in: updatedCoach.advisedUsers } })
+                .then(users => {
+                  res.status(200).json({ advisedUsers: users });
+                })
+                .catch(err => next(err));
+            })
+            .catch(err => next(err));
+        } else {
+          const err = new Error('Coach ' + req.params.coachId + ' not found');
+          err.status = 404;
+          return next(err);
+        }
+      })
+      .catch(err => next(err));
+  })
+  // Xóa advisedUsers
+  .delete((req, res, next) => {
+    const { userIds } = req.body;
+    Coaches.findById(req.params.coachId)
+      .then((coach) => {
+        if (coach) {
+          coach.advisedUsers = coach.advisedUsers.filter(userId => !userIds.includes(userId.toString()));
           coach.save()
             .then(updatedCoach => {
               Users.find({ '_id': { $in: updatedCoach.advisedUsers } })
@@ -387,7 +411,9 @@ adminRouter.get('/transactions', async (req, res) => {
     const transactions = await Transaction.find()
       .skip((page - 1) * limit)
       .limit(limit)
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .populate('user', 'username name email'); // Populating user data
+
     const totalTransactions = await Transaction.countDocuments();
     res.json({
       transactions,

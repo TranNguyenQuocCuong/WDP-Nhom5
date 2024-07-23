@@ -30,15 +30,27 @@ const NavbarAdmin = () => {
 
                 {/* Navigation Items */}
                 <List>
-                    <ListItem button component={Link} to="/admin/home">
+                    <ListItem>
                         <ListItemText primary="Dashboard" />
                     </ListItem>
-                    <ListItem button component={Link} to="/admin/home">
+                    <ListItem button component={Link} to="/admin/users">
                         <ListItemText primary="Users" />
                     </ListItem>
                     <ListItem button component={Link} to="/admin/coaches">
                         <ListItemText primary="Coach" />
                     </ListItem>
+
+                    <ListItem>
+                        <ListItemText primary="Courses Management" />
+                    </ListItem>
+                    <List component="div" disablePadding>
+                        <ListItem button component={Link} to="/admin/courses" sx={{ pl: 4 }}>
+                            <ListItemText primary="Courses" />
+                        </ListItem>
+                        <ListItem button component={Link} to="/admin/workouts" sx={{ pl: 4 }}>
+                            <ListItemText primary="Workout" />
+                        </ListItem>
+                    </List>
 
                     {/* Revenue Dropdown Always Visible */}
                     <ListItem>
@@ -55,9 +67,6 @@ const NavbarAdmin = () => {
 
                     <ListItem button component={Link} to="/admin/classes">
                         <ListItemText primary="Class" />
-                    </ListItem>
-                    <ListItem button component={Link} to="/admin/courses">
-                        <ListItemText primary="Courses" />
                     </ListItem>
                     <ListItem button component={Link} to="/admin/products">
                         <ListItemText primary="Product" />

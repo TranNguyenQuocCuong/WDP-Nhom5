@@ -5,7 +5,7 @@ import {
     Dialog, DialogTitle, DialogContent, Typography, IconButton, TablePagination,
     Select, MenuItem, FormControl, InputLabel, Button, DialogActions
 } from '@mui/material';
-import { Add as AddIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
+import { Add as AddIcon, Visibility as VisibilityIcon, Delete as DeleteIcon } from '@mui/icons-material';
 
 function ClassAdmin() {
     const [coaches, setCoaches] = useState([]);
@@ -30,6 +30,7 @@ function ClassAdmin() {
         axios.get('http://localhost:5000/api/admins/user')
             .then(response => {
                 setUsers(response.data);
+                console.log("Users fetched:", response.data);
             })
             .catch(error => {
                 console.error("There was an error fetching the users!", error);
@@ -40,8 +41,9 @@ function ClassAdmin() {
         axios.get(`http://localhost:5000/api/admins/coach/${coachId}`)
             .then(response => {
                 setSelectedCoach(response.data);
-                setAdvisedUsers(response.data.advisedUsers); // Cập nhật advised users
-                setViewingAdvisedUsers(true); // Chuyển sang chế độ xem advised users
+                setAdvisedUsers(response.data.advisedUsers);
+                console.log("Advised Users fetched:", response.data.advisedUsers);
+                setViewingAdvisedUsers(true);
                 setOpen(true);
             })
             .catch(error => {
@@ -63,11 +65,25 @@ function ClassAdmin() {
                 userIds: selectedUsers
             })
                 .then(response => {
-                    setAdvisedUsers(response.data.advisedUsers); // Cập nhật danh sách advised users
-                    setViewingAdvisedUsers(true); // Chuyển sang chế độ xem advised users
+                    setAdvisedUsers(response.data.advisedUsers);
+                    setViewingAdvisedUsers(true);
                 })
                 .catch(error => {
                     console.error("There was an error adding advised users!", error);
+                });
+        }
+    };
+
+    const handleRemoveAdvisedUsers = (userIds) => {
+        if (selectedCoach) {
+            axios.delete(`http://localhost:5000/api/admins/coach/${selectedCoach._id}/advisedUsers`, {
+                data: { userIds }
+            })
+                .then(response => {
+                    setAdvisedUsers(response.data.advisedUsers);
+                })
+                .catch(error => {
+                    console.error("There was an error removing advised users!", error);
                 });
         }
     };
@@ -127,56 +143,44 @@ function ClassAdmin() {
             </TableContainer>
 
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>
-                    {viewingAdvisedUsers ? 'List Users' : 'Add Advised Users'}
-                </DialogTitle>
+                <DialogTitle>Advised Users</DialogTitle>
                 <DialogContent>
-                    {viewingAdvisedUsers && selectedCoach && (
-                        <>
-                            <Typography variant="h6">Coach: {selectedCoach.username}</Typography>
-                            <TableContainer component={Paper} style={{ marginTop: 16 }}>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>No.</TableCell>
-                                            <TableCell>Username</TableCell>
-                                            <TableCell>Email</TableCell>
-                                            <TableCell>Name</TableCell>
+                    {viewingAdvisedUsers ? (
+                        <TableContainer component={Paper}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>No.</TableCell>
+                                        <TableCell>Username</TableCell>
+                                        <TableCell>Email</TableCell>
+                                        <TableCell>Actions</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {advisedUsers.map((user, index) => (
+                                        <TableRow key={user._id}>
+                                            <TableCell>{index + 1}</TableCell>
+                                            <TableCell>{user.username}</TableCell>
+                                            <TableCell>{user.email}</TableCell>
+                                            <TableCell>
+                                                <IconButton color="error" onClick={() => handleRemoveAdvisedUsers([user._id])}>
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </TableCell>
                                         </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {advisedUsers.map((user, index) => (
-                                            <TableRow key={user._id}>
-                                                <TableCell>{index + 1}</TableCell>
-                                                <TableCell>{user.username}</TableCell>
-                                                <TableCell>{user.email}</TableCell>
-                                                <TableCell>{user.name}</TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-
-                                </Table>
-                            </TableContainer>
-                        </>
-                    )}
-
-                    {!viewingAdvisedUsers && selectedCoach && (
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    ) : (
                         <>
-                            <Typography variant="h6">Coach: {selectedCoach.username}</Typography>
-                            <FormControl fullWidth margin="dense">
-                                <InputLabel>Select Users</InputLabel>
+                            <FormControl fullWidth>
+                                <InputLabel id="select-user-label">Select Users</InputLabel>
                                 <Select
+                                    labelId="select-user-label"
                                     multiple
                                     value={selectedUsers}
-                                    onChange={(e) => setSelectedUsers(e.target.value)}
-                                    renderValue={(selected) => (
-                                        <div>
-                                            {selected.map((userId) => {
-                                                const user = users.find(u => u._id === userId);
-                                                return user ? user.username : '';
-                                            }).join(', ')}
-                                        </div>
-                                    )}
+                                    onChange={(event) => setSelectedUsers(event.target.value)}
                                 >
                                     {users.map((user) => (
                                         <MenuItem key={user._id} value={user._id}>
@@ -189,23 +193,13 @@ function ClassAdmin() {
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color="primary">
-                        Cancel
-                    </Button>
-                    {!viewingAdvisedUsers && (
-                        <Button onClick={handleAddAdvisedUsers} color="primary">
-                            Add
-                        </Button>
-                    )}
-                    {!viewingAdvisedUsers && (
-                        <Button onClick={() => setViewingAdvisedUsers(true)} color="primary">
-                            View Users
-                        </Button>
-                    )}
-                    {viewingAdvisedUsers && (
-                        <Button onClick={() => setViewingAdvisedUsers(false)} color="primary">
-                            Back to Add
-                        </Button>
+                    {viewingAdvisedUsers ? (
+                        <Button onClick={handleClose} color="primary">Close</Button>
+                    ) : (
+                        <>
+                            <Button onClick={handleAddAdvisedUsers} color="primary">Add Users</Button>
+                            <Button onClick={handleClose} color="secondary">Close</Button>
+                        </>
                     )}
                 </DialogActions>
             </Dialog>
