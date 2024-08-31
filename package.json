@@ -78,7 +78,9 @@
     "start": "react-scripts start",
     "dev": "nodemon server.js",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test:backend": "jest routes",
+    "test:frontend": "jest components",
+    "test": "npm run test:backend && npm run test:frontend",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -100,6 +102,11 @@
     ]
   },
   "devDependencies": {
-    "source-map-loader": "^5.0.0"
+    "@babel/preset-react": "^7.24.7",
+    "cross-env": "^7.0.3",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "source-map-loader": "^5.0.0",
+    "supertest": "^7.0.0"
   }
 }
